@@ -1107,7 +1107,7 @@ print(thisguy.Name .. " was last hit by " .. API.GetPlayerLastHitBy(thisguy)) ->
 ]]
 
 function API.GetTwistedRarity(twisted: Instance? | string?)
-	API.Assert(twisted ~= nil and (typeof(twisted) == "Instance" or typeof(twisted) == "string"), ".GetTwistedInfo: Invalid \"twisted\" parameter. Make sure \"twisted\" exists and is an Instance or a string.")
+	API.Assert(twisted ~= nil and (typeof(twisted) == "Instance" or typeof(twisted) == "string"), ".GetTwistedRarity: Invalid \"twisted\" parameter. Make sure \"twisted\" exists and is an Instance or a string.")
 
 	local twistedname = twisted.Name
 
@@ -1120,11 +1120,11 @@ print(API.GetTwistedRarity("SproutMonster")) -> "Main"
 ]]
 
 function API.GetTwistedResearchFromPlayer(twisted: Instance? | string?, player: Instance?)
-	API.Assert(twisted ~= nil and (typeof(twisted) == "Instance" or typeof(twisted) == "string"), ".GetTwistedInfo: Invalid \"twisted\" parameter. Make sure \"twisted\" exists and is an Instance or a string.")
+	API.Assert(twisted ~= nil and (typeof(twisted) == "Instance" or typeof(twisted) == "string"), ".GetTwistedResearchFromPlayer: Invalid \"twisted\" parameter. Make sure \"twisted\" exists and is an Instance or a string.")
 
 	player = player or plr
 
-	API.Assert(player ~= nil and player:IsA("Player"), ".GetTwistedsChasingPlayer: Invalid \"player\" parameter. Make sure \"player\" is a Player.")
+	API.Assert(player ~= nil and player:IsA("Player"), ".GetTwistedResearchFromPlayer: Invalid \"player\" parameter. Make sure \"player\" is a Player.")
 
 	local playerid = player.UserId
 	if typeof(twisted) == "Instance" then
