@@ -388,7 +388,7 @@ print(API.FetchPlayerTrinketSlot(plr, 1)) -> "Vee Remote"
 print(API.FetchPlayerTrinketSlot(plr, 2)) -> "None"
 
 local thisguy = plrs.ThisGuy
-print(thisguy.Name .. " has a " .. API.FetchPlayerTrinketSlot(thisguy, 1)) -> "ThisGuy has a Vee Remote"
+print(thisguy.Name .. " has a " .. API.FetchPlayerTrinketSlot(thisguy, 1) .. " equipped") -> "ThisGuy has a Vee Remote equipped"
 ]]
 
 function API.Get(ins: string?)
