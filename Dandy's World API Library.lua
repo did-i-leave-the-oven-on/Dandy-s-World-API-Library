@@ -136,7 +136,7 @@ function API.UpdateGameRefs()
 		API.ItemsFolder = room:FindFirstChild("Items") or nil
 		API.MachinesFolder = room:FindFirstChild("Generators") or nil
 		freearea = room:FindFirstChild("FreeArea") or nil
-		
+
 		if freearea then
 			API.FakeElevator = freearea:FindFirstChild("FakeElevator") or nil
 		end
@@ -281,21 +281,21 @@ function API.GetGameInfo(give: string?)
 
 	API.Assert(give ~= nil and typeof(give) == "string", ".GetGameInfo: Invalid \"give\" parameter. Make sure \"give\" is a string.")
 
-	local gameFolder = API.GameInfoFolder
+	local gameinfofolder = API.GameInfoFolder
 	local gamestats = {
-		gameStarted = (gameFolder and gameFolder:FindFirstChild("GameStarted")) and gameFolder.GameStarted.Value or false,
-		cardVoting = (gameFolder and gameFolder:FindFirstChild("CardVoting")) and gameFolder.CardVoting.Value or false,
-		dandyStoreOpen = (gameFolder and gameFolder:FindFirstChild("DandyStoreOpen")) and gameFolder.DandyStoreOpen.Value or false,
-		floor = (gameFolder and gameFolder:FindFirstChild("Floor")) and gameFolder.Floor.Value or 0,
-		floorActive = (gameFolder and gameFolder:FindFirstChild("FloorActive")) and gameFolder.FloorActive.Value or false,
-		panicMode = (gameFolder and gameFolder:FindFirstChild("Panic")) and gameFolder.Panic.Value or false,
-		machinesCompleted = (gameFolder and gameFolder:FindFirstChild("GeneratorsCompleted")) and gameFolder.GeneratorsCompleted.Value or 0,
-		machinesRequired = (gameFolder and gameFolder:FindFirstChild("RequiredGenerators")) and gameFolder.RequiredGenerators.Value or 0,
-		machinesLeft = ((gameFolder and gameFolder:FindFirstChild("RequiredGenerators")) and gameFolder.RequiredGenerators.Value or 0) - ((gameFolder and gameFolder:FindFirstChild("GeneratorsCompleted")) and gameFolder.GeneratorsCompleted.Value or 0),
-		blackout = (gameFolder and gameFolder:FindFirstChild("BlackOut")) and gameFolder.BlackOut.Value or false,
-		playersAlive = (gameFolder and gameFolder:FindFirstChild("ActivePlayers")) and #gameFolder.ActivePlayers:GetChildren() or 0,
-		boughtNothingForThisManyFloors = (gameFolder and gameFolder:FindFirstChild("DandyTracker") and gameFolder.DandyTracker:FindFirstChild("NoBuy")) and gameFolder.DandyTracker.NoBuy.Value or 0,
-		gameMessage = (gameFolder and gameFolder:FindFirstChild("Message")) and gameFolder.Message.Value or ""
+		gameStarted = (gameinfofolder and gameinfofolder:FindFirstChild("GameStarted")) and gameinfofolder.GameStarted.Value or false,
+		cardVoting = (gameinfofolder and gameinfofolder:FindFirstChild("CardVoting")) and gameinfofolder.CardVoting.Value or false,
+		dandyStoreOpen = (gameinfofolder and gameinfofolder:FindFirstChild("DandyStoreOpen")) and gameinfofolder.DandyStoreOpen.Value or false,
+		floor = (gameinfofolder and gameinfofolder:FindFirstChild("Floor")) and gameinfofolder.Floor.Value or 0,
+		floorActive = (gameinfofolder and gameinfofolder:FindFirstChild("FloorActive")) and gameinfofolder.FloorActive.Value or false,
+		panicMode = (gameinfofolder and gameinfofolder:FindFirstChild("Panic")) and gameinfofolder.Panic.Value or false,
+		machinesCompleted = (gameinfofolder and gameinfofolder:FindFirstChild("GeneratorsCompleted")) and gameinfofolder.GeneratorsCompleted.Value or 0,
+		machinesRequired = (gameinfofolder and gameinfofolder:FindFirstChild("RequiredGenerators")) and gameinfofolder.RequiredGenerators.Value or 0,
+		machinesLeft = ((gameinfofolder and gameinfofolder:FindFirstChild("RequiredGenerators")) and gameinfofolder.RequiredGenerators.Value or 0) - ((gameinfofolder and gameinfofolder:FindFirstChild("GeneratorsCompleted")) and gameinfofolder.GeneratorsCompleted.Value or 0),
+		blackout = (gameinfofolder and gameinfofolder:FindFirstChild("BlackOut")) and gameinfofolder.BlackOut.Value or false,
+		playersAlive = (gameinfofolder and gameinfofolder:FindFirstChild("ActivePlayers")) and #gameinfofolder.ActivePlayers:GetChildren() or 0,
+		boughtNothingForThisManyFloors = (gameinfofolder and gameinfofolder:FindFirstChild("DandyTracker") and gameinfofolder.DandyTracker:FindFirstChild("NoBuy")) and gameinfofolder.DandyTracker.NoBuy.Value or 0,
+		gameMessage = (gameinfofolder and gameinfofolder:FindFirstChild("Message")) and gameinfofolder.Message.Value or ""
 	}
 
 	if give == "table" then
@@ -854,15 +854,15 @@ function API.GetMachineInfo(machine: Instance?, give: string?)
 		end
 	end
 
-	local resolvedType = machtype
+	local resolvedtype = machtype
 	if machtype and machtype2 then
-		resolvedType = "Dual " .. machtype .. " and " .. machtype2
+		resolvedtype = "Dual " .. machtype .. " and " .. machtype2
 	elseif machtype then
-		resolvedType = machtype
+		resolvedtype = machtype
 	end
 
 	local data = {
-		type = resolvedType,
+		type = resolvedtype,
 		completed = machinestats and machinestats:FindFirstChild("Completed") and machinestats.Completed.Value or false,
 		posessed = machinestats and machinestats:FindFirstChild("Connie") and machinestats.Connie.Value or false,
 		debuffed = machine:GetAttribute("BrushaDebuffed") or false,
@@ -978,14 +978,14 @@ function API.GetTwistedsChasingPlayer(player: Instance?, give: string?, mapNames
 	if twistedsfolder then
 		for _, twisted in ipairs(twistedsfolder:GetChildren()) do
 			if typeof(twisted) == "Instance" and twisted:IsA("Model") then
-				local chasingTarget = API.GetTwistedInfo(twisted, "chasing")
+				local chasetarget = API.GetTwistedInfo(twisted, "chasing")
 
-				local isChasing = false
-				if chasingTarget == player.Character then
-					isChasing = true
+				local ischasing = false
+				if chasetarget == player.Character then
+					ischasing = true
 				end
 
-				if isChasing then
+				if ischasing then
 					table.insert(chasing, twisted)
 				end
 			end
