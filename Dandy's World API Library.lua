@@ -10,6 +10,8 @@
 ---------------------------------------------------------------------------------------------------------------------------]]--
 
 -- setup
+local API = {}
+
 local cloneref = cloneref or function(...) return ... end
 local getgenv = getgenv() or _G
 
@@ -21,8 +23,6 @@ if exists then
 	return
 end
 getgenv.DWAPIL_LOADED = true
-
-local API = {}
 
 local tisha = loadstring(game:HttpGet("https://raw.githubusercontent.com/did-i-leave-the-oven-on/Tisha/refs/heads/main/Tisha.lua"))()
 
@@ -1187,7 +1187,7 @@ print(boxtenresearch) -> 100
 
 local thisguy = plrs.ThisGuy
 local cosmoresearch = API.GetTwistedResearchFromPlayer("CosmoMonster", thisguy)
-print(thisguy.Name .. "'s research on cosmo: " .. cosmoresearch .. "%") -> "ThisGuy's research on cosmo: 69%"
+print(thisguy.Name .. "'s research on Twisted Cosmo: " .. cosmoresearch .. "%") -> "ThisGuy's research on Twisted Cosmo: 69%"
 ]]
 
 -------------------------------------------------------------------------------------------------------------------------------
