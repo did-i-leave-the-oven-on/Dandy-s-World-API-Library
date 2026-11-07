@@ -1080,6 +1080,8 @@ local function monitorroom()
 			folder = API.Get("twisteds")
 		end
 
+		repeat task.wait(0.1) until API.GetGameInfo("floorActive") == true
+
 		for _, twisted in ipairs(folder:GetChildren()) do
 			monitortwisted(twisted)
 		end
@@ -1172,7 +1174,7 @@ if inrun then
 		API.RoomFolder.ChildAdded:Connect(API.UpdateGameRefs)
 		API.RoomFolder.ChildRemoved:Connect(API.UpdateGameRefs)
 
-		plrgui:WaitForChild("ScreenGui"):WaitForChild("Menu"):WaitForChild("TopBar"):WaitForChild("FloorNumber"):WaitForChild("Text").Changed:Connect(API.UpdateGameRefs)
+		plrgui:WaitForChild("ScreenGui"):WaitForChild("Menu"):WaitForChild("TopBar"):WaitForChild("FloorNumber"):GetPropertyChangedSignal("Text"):Connect(API.UpdateGameRefs)
 	end)
 end
 
