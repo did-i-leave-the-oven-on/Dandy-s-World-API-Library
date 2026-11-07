@@ -39,33 +39,6 @@ local rs = cloneref(game:GetService("RunService"))
 -------------------------------------------------------------------------------------------------------------------------------
 
 -- debug
-rs.Heartbeat:Connect(function()
-	local dcm = coregui:FindFirstChild("DevConsoleMaster")
-	if not dcm then return end
-
-	local dcw = dcm:FindFirstChild("DevConsoleWindow", true)
-	if dcw and not dcw.Visible then return end
-
-	local force = "[Sprout]:"
-	local coloredForce = '<font color="rgb(255, 77, 77)">' .. force .. '</font>'
-
-	for _, v in pairs(dcm:GetDescendants()) do
-		if v:IsA("TextLabel") then
-			if not v.RichText then
-				v.RichText = true
-			end
-
-			if string.find(v.Text, "<font", 1, true) then
-				continue
-			end
-
-			if string.find(v.Text, force, 1, true) then
-				v.Text = v.Text:gsub(force, coloredForce, 1)
-			end
-		end
-	end
-end)
-
 function API.Print(message: string)
 	print("[Sprout]: " .. message)
 end
@@ -278,7 +251,7 @@ print(API.MapName("BlottMonster")) -> "Twisted Blot"
 
 function API.GetGameInfo(give: string?)
 	API.Assert(inrun ~= true, ".GetGameInfo: You can only use this function in a run.")
-	
+
 	give = give or "table" -- gameStarted, cardVoting, dandyStoreOpen, floor, floorActive, panicMode, machinesCompleted, machinesRequired, machinesLeft, blackout, playersAlive, boughtNothingForThisManyFloors, gameMessage, table
 
 	API.Assert(give ~= nil and typeof(give) == "string", ".GetGameInfo: Invalid \"give\" parameter. Make sure \"give\" is a string.")
@@ -319,7 +292,7 @@ if API.GetGameInfo("blackout") then print("The lights are out") end -> "The ligh
 
 function API.Panicking()
 	API.Assert(inrun ~= true, ".Panicking: You can only use this function in a run.")
-	
+
 	return API.GetGameInfo("panicMode")
 end --[[
 example usage:
@@ -330,7 +303,7 @@ print("Panic mode is " .. panicking .. ".") -> "Panic mode is off."
 
 function API.IsBreakRoom()
 	API.Assert(inrun ~= true, ".IsBreakRoom: You can only use this function in a run.")
-	
+
 	return string.lower(plrgui.ScreenGui.Menu.TopBar.FloorNumber.Text):find("break")
 end --[[
 example usage:
@@ -341,7 +314,7 @@ print("Currently " .. hammertime .. " in the break room") -> "Currently not in t
 
 function API.FetchItemInPlayerInventorySlot(player: Instance?, slot: number?)
 	API.Assert(inrun ~= true, ".FetchItemInPlayerInventorySlot: You can only use this function in a run.")
-	
+
 	player = player or plr
 
 	API.Assert(player ~= nil and player:IsA("Player"), ".FetchItemInPlayerInventorySlot: Invalid \"player\" parameter. Make sure \"player\" is a Player.")
@@ -382,7 +355,7 @@ print(thisguy.Name .. " has a " .. API.FetchItemInPlayerInventorySlot(thisguy, 2
 
 function API.FetchPlayerTrinketSlot(player: Instance?, slot: number?)
 	API.Assert(inrun ~= true, ".FetchPlayerTrinketSlot: You can only use this function in a run.")
-	
+
 	player = player or plr
 
 	API.Assert(player ~= nil and player:IsA("Player"), ".FetchPlayerTrinketSlot: Invalid \"player\" parameter. Make sure \"player\" is a Player.")
@@ -432,7 +405,7 @@ print(#twisteds:GetChildren() .. " twisteds are on the floor") -> "3 twisteds ar
 -- player handling
 function API.GetPlayerInfo(player: Instance?, give: string?, mapNames: boolean?)
 	API.Assert(inrun ~= true, ".GetPlayerInfo: You can only use this function in a run.")
-	
+
 	player = player or plr
 	give = give or "table" -- toon, health, tapes, walkSpeed, runSpeed, icon, inventorySlot1, inventorySlot2, inventorySlot3, inventorySlot4, trinketSlot1, trinketSlot2, abilityActive, dead, table
 	mapNames = mapNames or false
@@ -506,7 +479,7 @@ print(API.GetPlayerInfo(thisguy, "dead") and "dead" or "alive") -> "alive"
 
 function API.GetPlayersAlive(give: string?, toonify: boolean?)
 	API.Assert(inrun ~= true, ".GetPlayersAlive: You can only use this function in a run.")
-	
+
 	give = give or "table" -- table, stringList, number
 	toonify = toonify or false
 
@@ -550,7 +523,7 @@ end
 
 function API.GetPlayersInElevator(give: string?, toonify: boolean?)
 	API.Assert(inrun ~= true, ".GetPlayersInElevator: You can only use this function in a run.")
-	
+
 	give = give or "table" -- table, stringList, number
 	toonify = toonify or false
 
@@ -610,7 +583,7 @@ end
 
 function API.GetPlayersOutOfElevator(give: string?, toonify: boolean?)
 	API.Assert(inrun ~= true, ".GetPlayersOutOfElevator: You can only use this function in a run.")
-	
+
 	give = give or "table" -- table, stringList, number
 	toonify = toonify or false
 
@@ -679,7 +652,7 @@ end
 
 function API.TrinketActiveFor(trinket: string?, player: Instance?)
 	API.Assert(inrun ~= true, ".TrinketActiveFor: You can only use this function in a run.")
-	
+
 	trinket = trinket or "VeeRemote" -- VeeRemote, Wrench, StarPillow, SavoryCharm, ClownHorn, RibbonSpool, DuckToy, VanityMirror, CardboardArmor
 	player = player or plr
 
@@ -716,7 +689,7 @@ end
 
 function API.GetPlayerToon(player: Instance?)
 	API.Assert(inrun ~= true, ".GetPlayerToon: You can only use this function in a run.")
-	
+
 	player = player or plr
 
 	API.Assert(player ~= nil and player:IsA("Player"), ".GetPlayerToon: Invalid \"player\" parameter. Make sure \"player\" is a Player.")
@@ -733,7 +706,7 @@ print(thisguy.Name .. " is playing as " .. API.GetPlayerToon(thisguy)) -> "ThisG
 
 function API.PlayerCanUseAbility(player: Instance?)
 	API.Assert(inrun ~= true, ".PlayerCanUseAbility: You can only use this function in a run.")
-	
+
 	player = player or plr
 
 	API.Assert(player ~= nil and player:IsA("Player"), ".PlayerCanUseAbility: Invalid \"player\" parameter. Make sure \"player\" is a Player.")
@@ -758,7 +731,7 @@ end
 -- floor handling
 function API.GetTwistedsOnFloor(give: string?, mapNames: boolean?)
 	API.Assert(inrun ~= true, ".GetTwistedsOnFloor: You can only use this function in a run.")
-	
+
 	give = give or "table" -- table, stringList, number
 	mapNames = mapNames or false
 
@@ -805,7 +778,7 @@ end
 
 function API.GetItemsOnFloor(give: string?, mapNames: boolean?)
 	API.Assert(inrun ~= true, ".GetItemsOnFloor: You can only use this function in a run.")
-	
+
 	give = give or "table" -- table, stringList, number
 	mapNames = mapNames or false
 
@@ -919,7 +892,7 @@ print(info.type .. " machine | debuffed: " .. tostring(info.debuffed) .. " | ins
 
 function API.CountTwistedObstacles()
 	API.Assert(inrun ~= true, ".CountTwistedObstacles: You can only use this function in a run.")
-	
+
 	local count = 0
 
 	if freearea then
@@ -998,7 +971,7 @@ print(info.mappedName .. " (" .. info.rarity .. ") | sight radius: " .. info.sig
 
 function API.GetTwistedsChasingPlayer(player: Instance?, give: string?, mapNames: boolean?)
 	API.Assert(inrun ~= true, ".GetTwistedsChasingPlayer: You can only use this function in a run.")
-	
+
 	player = player or plr
 	give = give or "table" -- table, stringList, number
 	mapNames = mapNames or false
@@ -1120,7 +1093,7 @@ monitorroom()
 
 function API.GetPlayerLastHitBy(player: Instance?, mapName: boolean?)
 	API.Assert(inrun ~= true, ".GetPlayerLastHitBy: You can only use this function in a run.")
-	
+
 	player = player or plr
 	mapName = mapName or false
 
@@ -1147,7 +1120,7 @@ function API.GetTwistedRarity(twisted: Instance? | string?)
 	if twisted and typeof(twisted) == "Instance" then
 		API.Assert(inrun ~= true, ".GetTwistedRarity: The \"twisted\" parameter must be a string since the player isn't in a run. (E.g.: \"BoxtenMonster\"")
 	end
-	
+
 	API.Assert(twisted ~= nil and (typeof(twisted) == "Instance" or typeof(twisted) == "string"), ".GetTwistedRarity: Invalid \"twisted\" parameter. Make sure \"twisted\" exists and is an Instance or a string.")
 
 	local twistedname = twisted.Name
@@ -1164,7 +1137,7 @@ function API.GetTwistedResearchFromPlayer(twisted: Instance? | string?, player: 
 	if twisted and typeof(twisted) == "Instance" then
 		API.Assert(inrun ~= true, ".GetTwistedResearchFromPlayer: The \"twisted\" parameter must be a string since the player isn't in a run. (E.g.: \"BoxtenMonster\"")
 	end
-	
+
 	API.Assert(twisted ~= nil and (typeof(twisted) == "Instance" or typeof(twisted) == "string"), ".GetTwistedResearchFromPlayer: Invalid \"twisted\" parameter. Make sure \"twisted\" exists and is an Instance or a string.")
 
 	player = player or plr
