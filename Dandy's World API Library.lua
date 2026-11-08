@@ -11,9 +11,10 @@
 
 -- setup
 local API = {}
+local loadArgs = (... and typeof(...) == "table") and ... or {}
 
 local cloneref = cloneref or function(...) return ... end
-local getgenv = getgenv() or _G
+local getgenv = (getgenv and getgenv()) or _G
 
 local exists = getgenv.DWAPIL_LOADED or nil
 if exists then
@@ -39,6 +40,8 @@ local rs = cloneref(game:GetService("RunService"))
 -------------------------------------------------------------------------------------------------------------------------------
 
 -- debug
+local debugmode = loadArgs.debugMode or false
+
 function API.Print(message: string)
 	print("[Sprout]: " .. message)
 end
@@ -58,6 +61,11 @@ function API.Assert(condition: any, message: string)
 	end
 
 	return condition
+end
+
+function API.Debug(message: string)
+	if not debugmode then return end
+	print("[Sprout]: " .. message)
 end
 
 -------------------------------------------------------------------------------------------------------------------------------
@@ -84,16 +92,17 @@ end
 -- game variables
 local inrun = game.PlaceId == 16552821455
 
-API.PlayersFolder = inrun and ws:WaitForChild("InGamePlayers")
-API.Elevator = inrun and ws:WaitForChild("Elevators"):WaitForChild("Elevator")
+API.PlayersFolder = inrun and ws:WaitForChild("InGamePlayers") or nil
+API.Elevator = inrun and ws:WaitForChild("Elevators"):WaitForChild("Elevator") or nil
 API.FakeElevator = nil
-API.GameInfoFolder = inrun and ws:WaitForChild("Info")
-API.RoomFolder = inrun and ws:WaitForChild("CurrentRoom")
+API.GameInfoFolder = inrun and ws:WaitForChild("Info") or nil
+API.RoomFolder = inrun and ws:WaitForChild("CurrentRoom") or nil
 
 API.TwistedsFolder = nil
 API.ItemsFolder = nil
 API.MachinesFolder = nil
 API.FreeAreaFolder = nil
+API.StarPillowsFolder = nil
 
 function API.UpdateGameRefs()
 	if not inrun then return end
@@ -105,13 +114,14 @@ function API.UpdateGameRefs()
 	local room = API.Get("room")
 
 	if room then
-		API.TwistedsFolder = room:FindFirstChild("Monsters") or nil
-		API.ItemsFolder = room:FindFirstChild("Items") or nil
-		API.MachinesFolder = room:FindFirstChild("Generators") or nil
-		freearea = room:FindFirstChild("FreeArea") or nil
+		API.TwistedsFolder = room:WaitForChild("Monsters", 5) or nil
+		API.ItemsFolder = room:WaitForChild("Items", 5) or nil
+		API.MachinesFolder = room:WaitForChild("Generators", 5) or nil
+		API.FreeAreaFolder = room:WaitForChild("FreeArea", 5) or nil
+		API.StarPillowsFolder = room:WaitForChild("StarPillows", 5) or nil
 
-		if freearea then
-			API.FakeElevator = freearea:FindFirstChild("FakeElevator") or nil
+		if API.FreeAreaFolder then
+			API.FakeElevator = API.FreeAreaFolder:WaitForChild("FakeElevator", 5) or nil
 		end
 	end
 end
@@ -250,7 +260,7 @@ print(API.MapName("BlottMonster")) -> "Twisted Blot"
 ]]
 
 function API.GetGameInfo(give: string?)
-	-- API.Assert(inrun == true, ".GetGameInfo: You can only use this function in a run.")
+	API.Assert(inrun == true, ".GetGameInfo: You can only use this function in a run.")
 
 	give = give or "table" -- gameStarted, cardVoting, dandyStoreOpen, floor, floorActive, panicMode, machinesCompleted, machinesRequired, machinesLeft, blackout, playersAlive, boughtNothingForThisManyFloors, gameMessage, table
 
@@ -291,7 +301,7 @@ if API.GetGameInfo("blackout") then print("The lights are out") end -> "The ligh
 ]]
 
 function API.Panicking()
-	-- API.Assert(inrun == true, ".Panicking: You can only use this function in a run.")
+	API.Assert(inrun == true, ".Panicking: You can only use this function in a run.")
 
 	return API.GetGameInfo("panicMode")
 end --[[
@@ -302,7 +312,7 @@ print("Panic mode is " .. panicking .. ".") -> "Panic mode is off."
 ]]
 
 function API.IsBreakRoom()
-	-- API.Assert(inrun == true, ".IsBreakRoom: You can only use this function in a run.")
+	API.Assert(inrun == true, ".IsBreakRoom: You can only use this function in a run.")
 
 	return string.lower(plrgui.ScreenGui.Menu.TopBar.FloorNumber.Text):find("break")
 end --[[
@@ -313,7 +323,7 @@ print("Currently " .. hammertime .. " in the break room") -> "Currently not in t
 ]]
 
 function API.FetchItemInPlayerInventorySlot(player: Instance?, slot: number?)
-	-- API.Assert(inrun == true, ".FetchItemInPlayerInventorySlot: You can only use this function in a run.")
+	API.Assert(inrun == true, ".FetchItemInPlayerInventorySlot: You can only use this function in a run.")
 
 	player = player or plr
 
@@ -354,7 +364,7 @@ print(thisguy.Name .. " has a " .. API.FetchItemInPlayerInventorySlot(thisguy, 2
 ]]
 
 function API.FetchPlayerTrinketSlot(player: Instance?, slot: number?)
-	-- API.Assert(inrun == true, ".FetchPlayerTrinketSlot: You can only use this function in a run.")
+	API.Assert(inrun == true, ".FetchPlayerTrinketSlot: You can only use this function in a run.")
 
 	player = player or plr
 
@@ -375,7 +385,7 @@ print(thisguy.Name .. " has a " .. API.FetchPlayerTrinketSlot(thisguy, 1) .. " e
 ]]
 
 function API.Get(ins: string?)
-	-- API.Assert(inrun == true, ".Get: You can only use this function in a run.")
+	API.Assert(inrun == true, ".Get: You can only use this function in a run.")
 	API.Assert(ins ~= nil and typeof(ins) == "string", ".Get: Invalid \"ins\" parameter. Make sure \"ins\" is a string.")
 
 	ins = string.lower(ins)
@@ -404,7 +414,7 @@ print(#twisteds:GetChildren() .. " twisteds are on the floor") -> "3 twisteds ar
 
 -- player handling
 function API.GetPlayerInfo(player: Instance?, give: string?, mapNames: boolean?)
-	-- API.Assert(inrun == true, ".GetPlayerInfo: You can only use this function in a run.")
+	API.Assert(inrun == true, ".GetPlayerInfo: You can only use this function in a run.")
 
 	player = player or plr
 	give = give or "table" -- toon, health, tapes, walkSpeed, runSpeed, icon, inventorySlot1, inventorySlot2, inventorySlot3, inventorySlot4, trinketSlot1, trinketSlot2, abilityActive, dead, table
@@ -478,7 +488,7 @@ print(API.GetPlayerInfo(thisguy, "dead") and "dead" or "alive") -> "alive"
 ]]
 
 function API.GetPlayersAlive(give: string?, toonify: boolean?)
-	-- API.Assert(inrun == true, ".GetPlayersAlive: You can only use this function in a run.")
+	API.Assert(inrun == true, ".GetPlayersAlive: You can only use this function in a run.")
 
 	give = give or "table" -- table, stringList, number
 	toonify = toonify or false
@@ -522,7 +532,7 @@ end
 ]]
 
 function API.GetPlayersInElevator(give: string?, toonify: boolean?)
-	-- API.Assert(inrun == true, ".GetPlayersInElevator: You can only use this function in a run.")
+	API.Assert(inrun == true, ".GetPlayersInElevator: You can only use this function in a run.")
 
 	give = give or "table" -- table, stringList, number
 	toonify = toonify or false
@@ -582,7 +592,7 @@ end
 ]]
 
 function API.GetPlayersOutOfElevator(give: string?, toonify: boolean?)
-	-- API.Assert(inrun == true, ".GetPlayersOutOfElevator: You can only use this function in a run.")
+	API.Assert(inrun == true, ".GetPlayersOutOfElevator: You can only use this function in a run.")
 
 	give = give or "table" -- table, stringList, number
 	toonify = toonify or false
@@ -651,7 +661,7 @@ end
 ]]
 
 function API.TrinketActiveFor(trinket: string?, player: Instance?)
-	-- API.Assert(inrun == true, ".TrinketActiveFor: You can only use this function in a run.")
+	API.Assert(inrun == true, ".TrinketActiveFor: You can only use this function in a run.")
 
 	trinket = trinket or "VeeRemote" -- VeeRemote, Wrench, StarPillow, SavoryCharm, ClownHorn, RibbonSpool, DuckToy, VanityMirror, CardboardArmor
 	player = player or plr
@@ -688,7 +698,7 @@ end
 ]]
 
 function API.GetPlayerToon(player: Instance?)
-	-- API.Assert(inrun == true, ".GetPlayerToon: You can only use this function in a run.")
+	API.Assert(inrun == true, ".GetPlayerToon: You can only use this function in a run.")
 
 	player = player or plr
 
@@ -705,7 +715,7 @@ print(thisguy.Name .. " is playing as " .. API.GetPlayerToon(thisguy)) -> "ThisG
 ]]
 
 function API.PlayerCanUseAbility(player: Instance?)
-	-- API.Assert(inrun == true, ".PlayerCanUseAbility: You can only use this function in a run.")
+	API.Assert(inrun == true, ".PlayerCanUseAbility: You can only use this function in a run.")
 
 	player = player or plr
 
@@ -730,7 +740,7 @@ end
 
 -- floor handling
 function API.GetTwistedsOnFloor(give: string?, mapNames: boolean?)
-	-- API.Assert(inrun == true, ".GetTwistedsOnFloor: You can only use this function in a run.")
+	API.Assert(inrun == true, ".GetTwistedsOnFloor: You can only use this function in a run.")
 
 	give = give or "table" -- table, stringList, number
 	mapNames = mapNames or false
@@ -777,7 +787,7 @@ end
 ]]
 
 function API.GetItemsOnFloor(give: string?, mapNames: boolean?)
-	-- API.Assert(inrun == true, ".GetItemsOnFloor: You can only use this function in a run.")
+	API.Assert(inrun == true, ".GetItemsOnFloor: You can only use this function in a run.")
 
 	give = give or "table" -- table, stringList, number
 	mapNames = mapNames or false
@@ -824,7 +834,7 @@ end
 ]]
 
 function API.GetMachineInfo(machine: Instance?, give: string?)
-	-- API.Assert(inrun == true, ".GetMachineInfo: You can only use this function in a run.")
+	API.Assert(inrun == true, ".GetMachineInfo: You can only use this function in a run.")
 	API.Assert(machine ~= nil and typeof(machine) == "Instance", ".GetMachineInfo: Invalid \"machine\" parameter. Make sure \"machine\" is an Instance.")
 
 	give = give or "table" -- type, completed, posessed, debuffed, inspired, table
@@ -891,12 +901,12 @@ print(info.type .. " machine | debuffed: " .. tostring(info.debuffed) .. " | ins
 ]]
 
 function API.CountTwistedObstacles()
-	-- API.Assert(inrun == true, ".CountTwistedObstacles: You can only use this function in a run.")
+	API.Assert(inrun == true, ".CountTwistedObstacles: You can only use this function in a run.")
 
 	local count = 0
 
-	if freearea then
-		for _, obj in ipairs(freearea:GetChildren()) do
+	if API.FreeAreaFolder then
+		for _, obj in ipairs(API.FreeAreaFolder:GetChildren()) do
 			if obj.Name:find("Tendril") then
 				count += 1
 			end
@@ -923,7 +933,7 @@ end
 
 -- twisted handling
 function API.GetTwistedInfo(twisted: Instance?, give: string?)
-	-- API.Assert(inrun == true, ".GetTwistedInfo: You can only use this function in a run.")
+	API.Assert(inrun == true, ".GetTwistedInfo: You can only use this function in a run.")
 	API.Assert(twisted ~= nil and typeof(twisted) == "Instance", ".GetTwistedInfo: Invalid \"twisted\" parameter. Make sure \"twisted\" exists and is an Instance.")
 
 	give = give or "table" -- mappedName, wanderSpeed, chaseSpeed, rarity, chasing, hitboxRadius, detectionRadius, sightRadius, hearingRadius, research, table
@@ -970,7 +980,7 @@ print(info.mappedName .. " (" .. info.rarity .. ") | sight radius: " .. info.sig
 ]]
 
 function API.GetTwistedsChasingPlayer(player: Instance?, give: string?, mapNames: boolean?)
-	-- API.Assert(inrun == true, ".GetTwistedsChasingPlayer: You can only use this function in a run.")
+	API.Assert(inrun == true, ".GetTwistedsChasingPlayer: You can only use this function in a run.")
 
 	player = player or plr
 	give = give or "table" -- table, stringList, number
@@ -1035,38 +1045,54 @@ local sessionmaid = nil
 local function recordhit(twisted)
 	local chasing = twisted and twisted:FindFirstChild("ChasingValue")
 	local target = chasing and chasing.Value
-	if typeof(target) ~= "Instance" then return end
+	
+	if typeof(target) ~= "Instance" then 
+		API.Debug("recordhit: Target is not a valid instance for twisted: " .. twisted and twisted.Name)
+		return 
+	end
 
 	if target:IsA("Player") then target = target.Character end
-	if not target then return end
+	if not target then 
+		API.Debug("recordhit Target character could not be resolved for twisted: " .. twisted and twisted.Name)
+		return 
+	end
 
 	lasthits[target] = { twisted = twisted }
+	API.Debug("recordhit: Success! Twisted \"" .. twisted.Name .. "\" hit target character \"" .. target.Name .. "\"")
 end
 
 local function monitortwisted(twisted)
 	if not twisted:IsA("Model") or monitored[twisted] then return end
+	API.Debug("monitortwisted: Monitoring new Twisted: " .. twisted.Name)
 
 	local maid = tisha.new()
 	monitored[twisted] = maid
 
 	maid:give(twisted:GetAttributeChangedSignal("Attacking"):Connect(function()
-		if twisted:GetAttribute("Attacking") == true then
+		local isAttacking = twisted:GetAttribute("Attacking")
+		API.Debug("monitortwisted: Twisted \"" .. twisted.Name .. "\"'s \"Attacking\" attribute changed to: " .. tostring(isAttacking))
+		if isAttacking == true then
 			recordhit(twisted)
 		end
 	end))
 
 	maid:give(twisted.Destroying:Connect(function()
+		API.Debug("monitortwisted: Twisted model \"" .. twisted.Name .. "\" destroyed / removed.")
 		monitored[twisted] = nil
 		maid:destroy()
 	end))
 
 	if twisted:GetAttribute("Attacking") == true then
+		API.Debug("monitortwisted: Twisted " .. twisted.Name .. " is already attacking upon initialization.")
 		recordhit(twisted)
 	end
 end
 
 local function monitorroom()
+	API.Debug("monitorroom: Called / restarted.")
+	
 	if sessionmaid then
+		API.Debug("monitorroom: Destroying previous session maid.")
 		sessionmaid:destroy()
 	end
 
@@ -1074,27 +1100,42 @@ local function monitorroom()
 	sessionmaid = maid
 
 	maid:spawn(function()
+		API.Debug("monitorroom: Waiting for Twisteds folder...")
+		
 		local folder = API.Get("twisteds")
+
 		while not folder do
 			task.wait(0.1)
 			folder = API.Get("twisteds")
 		end
+		API.Debug("monitorroom: Twisteds folder found!")
 
+		API.Debug("monitorroom: Waiting for floor...")
 		repeat task.wait(0.1) until API.GetGameInfo("floorActive") == true
+		API.Debug("monitorroom: Floor is now active.")
 
-		for _, twisted in ipairs(folder:GetChildren()) do
+		local children = folder:GetChildren()
+		API.Debug("monitorroom: Scanning " .. #children .. " existing children in Twisteds folder...")
+		for _, twisted in ipairs(children) do
 			monitortwisted(twisted)
 		end
 
-		maid:give(folder.ChildAdded:Connect(monitortwisted))
+		maid:give(folder.ChildAdded:Connect(function(twisted)
+			API.Debug("monitorroom: ChildAdded event fired in Twisteds folder for Twisted: " .. twisted.Name)
+			monitortwisted(twisted)
+		end))
 	end)
 end
 
-mainmaid:give(API.RoomFolder.ChildAdded:Connect(monitorroom), "roomadded")
+mainmaid:give(API.RoomFolder.ChildAdded:Connect(function()
+	API.Debug(".GetPlayerLastHitBy: ChildAdded event fired for the current room. Resetting...")
+	monitorroom()
+end), "roomadded")
+
 monitorroom()
 
 function API.GetPlayerLastHitBy(player: Instance?, mapName: boolean?)
-	-- API.Assert(inrun == true, ".GetPlayerLastHitBy: You can only use this function in a run.")
+	API.Assert(inrun == true, ".GetPlayerLastHitBy: You can only use this function in a run.")
 
 	player = player or plr
 	mapName = mapName or false
@@ -1120,7 +1161,7 @@ print(thisguy.Name .. " was last hit by " .. API.GetPlayerLastHitBy(thisguy)) ->
 
 function API.GetTwistedRarity(twisted: Instance? | string?)
 	if twisted and typeof(twisted) == "Instance" then
-		-- API.Assert(inrun == true, ".GetTwistedRarity: The \"twisted\" parameter must be a string since the player isn't in a run. (E.g.: \"BoxtenMonster\"")
+		API.Assert(inrun == true, ".GetTwistedRarity: The \"twisted\" parameter must be a string since the player isn't in a run. (E.g.: \"BoxtenMonster\"")
 	end
 
 	API.Assert(twisted ~= nil and (typeof(twisted) == "Instance" or typeof(twisted) == "string"), ".GetTwistedRarity: Invalid \"twisted\" parameter. Make sure \"twisted\" exists and is an Instance or a string.")
@@ -1137,7 +1178,7 @@ print(API.GetTwistedRarity("SproutMonster")) -> "Main"
 
 function API.GetTwistedResearchFromPlayer(twisted: Instance? | string?, player: Instance?)
 	if twisted and typeof(twisted) == "Instance" then
-		-- API.Assert(inrun == true, ".GetTwistedResearchFromPlayer: The \"twisted\" parameter must be a string since the player isn't in a run. (E.g.: \"BoxtenMonster\"")
+		API.Assert(inrun == true, ".GetTwistedResearchFromPlayer: The \"twisted\" parameter must be a string since the player isn't in a run. (E.g.: \"BoxtenMonster\"")
 	end
 
 	API.Assert(twisted ~= nil and (typeof(twisted) == "Instance" or typeof(twisted) == "string"), ".GetTwistedResearchFromPlayer: Invalid \"twisted\" parameter. Make sure \"twisted\" exists and is an Instance or a string.")
@@ -1167,6 +1208,7 @@ print(thisguy.Name .. "'s research on Twisted Cosmo: " .. cosmoresearch .. "%") 
 
 -------------------------------------------------------------------------------------------------------------------------------
 
+-- init
 if inrun then
 	task.spawn(function()
 		API.UpdateGameRefs()
