@@ -10,8 +10,7 @@
 ---------------------------------------------------------------------------------------------------------------------------]]--
 
 -- setup
-local API = {}
-local loadArgs = (... and typeof(...) == "table") and ... or {}
+local API, loadArgs = {}, (... and typeof(...) == "table") and ... or {}
 
 local cloneref = cloneref or function(...) return ... end
 local getgenv = (getgenv and getgenv()) or _G
