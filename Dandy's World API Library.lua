@@ -1126,12 +1126,14 @@ local function monitorroom()
 	end)
 end
 
-mainmaid:give(API.RoomFolder.ChildAdded:Connect(function()
-	API.Debug(".GetPlayerLastHitBy: ChildAdded event fired for the current room. Resetting...")
-	monitorroom()
-end), "roomadded")
+if inrun then
+	mainmaid:give(API.RoomFolder.ChildAdded:Connect(function()
+		API.Debug(".GetPlayerLastHitBy: ChildAdded event fired for the current room. Resetting...")
+		monitorroom()
+	end), "roomadded")
 
-monitorroom()
+	monitorroom()
+end
 
 function API.GetPlayerLastHitBy(player: Instance?, mapName: boolean?)
 	API.Assert(inrun == true, ".GetPlayerLastHitBy: You can only use this function in a run.")
