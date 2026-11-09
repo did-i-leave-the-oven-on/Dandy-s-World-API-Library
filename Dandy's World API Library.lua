@@ -221,9 +221,9 @@ function API.SpaceCamelCased(message: string?)
 end --[[
 example usage:
 
-print(API.SpaceCamelCased("VeeRemote")) -> "Vee Remote"
-print(API.SpaceCamelCased("CardboardArmor")) -> "Cardboard Armor"
-print(API.SpaceCamelCased("None")) -> "None"
+print(API.SpaceCamelCased("VeeRemote")) → "Vee Remote"
+print(API.SpaceCamelCased("CardboardArmor")) → "Cardboard Armor"
+print(API.SpaceCamelCased("None")) → "None"
 ]]
 
 function API.MapName(name: string?)
@@ -253,9 +253,9 @@ function API.MapName(name: string?)
 end --[[
 example usage:
 
-print(API.MapName("SproutMonster")) -> "Twisted Sprout"
-print(API.MapName("RazzleDazzleMonster")) -> "Twisted Razzle & Dazzle"
-print(API.MapName("BlottMonster")) -> "Twisted Blot"
+print(API.MapName("SproutMonster")) → "Twisted Sprout"
+print(API.MapName("RazzleDazzleMonster")) → "Twisted Razzle & Dazzle"
+print(API.MapName("BlottMonster")) → "Twisted Blot"
 ]]
 
 function API.GetGameInfo(give: string?)
@@ -290,13 +290,13 @@ function API.GetGameInfo(give: string?)
 end --[[
 example usage:
 
-print("Floor " .. API.GetGameInfo("floor")) -> "Floor 12"
-print(API.GetGameInfo("machinesLeft") .. " machines left!") -> "2 machines left!"
+print("Floor " .. API.GetGameInfo("floor")) → "Floor 12"
+print(API.GetGameInfo("machinesLeft") .. " machines left!") → "2 machines left!"
 
 local info = API.GetGameInfo()
-print(info.playersAlive .. " players alive | " .. info.machinesCompleted .. "/" .. info.machinesRequired .. " machines done") -> "4 players alive | 3/5 machines done"
+print(info.playersAlive .. " players alive | " .. info.machinesCompleted .. "/" .. info.machinesRequired .. " machines done") → "4 players alive | 3/5 machines done"
 
-if API.GetGameInfo("blackout") then print("The lights are out") end -> "The lights are out"
+if API.GetGameInfo("blackout") then print("The lights are out") end → "The lights are out"
 ]]
 
 function API.Panicking()
@@ -307,7 +307,7 @@ end --[[
 example usage:
 
 local panicking = API.Panicking() and "on" or "off"
-print("Panic mode is " .. panicking .. ".") -> "Panic mode is off."
+print("Panic mode is " .. panicking .. ".") → "Panic mode is off."
 ]]
 
 function API.IsBreakRoom()
@@ -318,7 +318,7 @@ end --[[
 example usage:
 
 local hammertime = API.IsBreakRoom() and "not" or ""
-print("Currently " .. hammertime .. " in the break room") -> "Currently not in the break room"
+print("Currently " .. hammertime .. " in the break room") → "Currently not in the break room"
 ]]
 
 function API.FetchItemInPlayerInventorySlot(player: Instance?, slot: number?)
@@ -355,11 +355,11 @@ function API.FetchItemInPlayerInventorySlot(player: Instance?, slot: number?)
 end --[[
 example usage:
 
-print(API.FetchItemInPlayerInventorySlot(plr, 1)) -> "Bandage"
-print(API.FetchItemInPlayerInventorySlot(plr, 3)) -> "None"
+print(API.FetchItemInPlayerInventorySlot(plr, 1)) → "Bandage"
+print(API.FetchItemInPlayerInventorySlot(plr, 3)) → "None"
 
 local thisguy = plrs.ThisGuy
-print(thisguy.Name .. " has a " .. API.FetchItemInPlayerInventorySlot(thisguy, 2)) -> "ThisGuy has a Valve"
+print(thisguy.Name .. " has a " .. API.FetchItemInPlayerInventorySlot(thisguy, 2)) → "ThisGuy has a Valve"
 ]]
 
 function API.FetchPlayerTrinketSlot(player: Instance?, slot: number?)
@@ -376,11 +376,11 @@ function API.FetchPlayerTrinketSlot(player: Instance?, slot: number?)
 end --[[
 example usage:
 
-print(API.FetchPlayerTrinketSlot(plr, 1)) -> "Vee Remote"
-print(API.FetchPlayerTrinketSlot(plr, 2)) -> "None"
+print(API.FetchPlayerTrinketSlot(plr, 1)) → "Vee Remote"
+print(API.FetchPlayerTrinketSlot(plr, 2)) → "None"
 
 local thisguy = plrs.ThisGuy
-print(thisguy.Name .. " has a " .. API.FetchPlayerTrinketSlot(thisguy, 1) .. " equipped") -> "ThisGuy has a Vee Remote equipped"
+print(thisguy.Name .. " has a " .. API.FetchPlayerTrinketSlot(thisguy, 1) .. " equipped") → "ThisGuy has a Vee Remote equipped"
 ]]
 
 function API.Get(ins: string?)
@@ -397,6 +397,8 @@ function API.Get(ins: string?)
 		return API.TwistedsFolder
 	elseif ins == "machines" then
 		return API.MachinesFolder
+	elseif ins == "starpillows" then
+		return API.StarPillowsFolder
 	elseif ins == "elevator" then
 		return API.Elevator
 	elseif ins == "fakelevator" then
@@ -406,7 +408,7 @@ end --[[
 example usage:
 
 local twisteds = API.Get("twisteds")
-print(#twisteds:GetChildren() .. " twisteds are on the floor") -> "3 twisteds are on the floor"
+print(#twisteds:GetChildren() .. " twisteds are on the floor") → "3 twisteds are on the floor"
 ]]
 
 -------------------------------------------------------------------------------------------------------------------------------
@@ -476,14 +478,14 @@ function API.GetPlayerInfo(player: Instance?, give: string?, mapNames: boolean?)
 end --[[
 example usage:
 
-print(API.GetPlayerInfo(plr, "toon")) -> "Poppy"
-print(API.GetPlayerInfo(plr, "health") .. " HP") -> "100 HP"
+print(API.GetPlayerInfo(plr, "toon")) → "Poppy"
+print(API.GetPlayerInfo(plr, "health") .. " HP") → "100 HP"
 
 local thisguy = plrs.ThisGuy
 local info = API.GetPlayerInfo(thisguy)
-print(thisguy.Name .. " is playing as " .. info.toon .. " and currently has " .. info.tapes .. " tapes") -> "ThisGuy is playing as Shelly and currently has 12 tapes"
+print(thisguy.Name .. " is playing as " .. info.toon .. " and currently has " .. info.tapes .. " tapes") → "ThisGuy is playing as Shelly and currently has 12 tapes"
 
-print(API.GetPlayerInfo(thisguy, "dead") and "dead" or "alive") -> "alive"
+print(API.GetPlayerInfo(thisguy, "dead") and "dead" or "alive") → "alive"
 ]]
 
 function API.GetPlayersAlive(give: string?, toonify: boolean?)
@@ -521,12 +523,12 @@ function API.GetPlayersAlive(give: string?, toonify: boolean?)
 end --[[
 example usage:
 
-print(API.GetPlayersAlive("number") .. " players alive") -> "4 players alive"
-print(API.GetPlayersAlive("stringList")) -> "You, ThisGuy, ThatGuy, OtherGuy"
-print(API.GetPlayersAlive("stringList", true)) -> "Poppy, Shelly, Astro, Pebble"
+print(API.GetPlayersAlive("number") .. " players alive") → "4 players alive"
+print(API.GetPlayersAlive("stringList")) → "You, ThisGuy, ThatGuy, OtherGuy"
+print(API.GetPlayersAlive("stringList", true)) → "Poppy, Shelly, Astro, Pebble"
 
 for _, player in ipairs(API.GetPlayersAlive()) do
-	print(player.Name .. " is still alive") -> "ThisGuy is still alive"
+	print(player.Name .. " is still alive") → "ThisGuy is still alive"
 end
 ]]
 
@@ -581,12 +583,12 @@ function API.GetPlayersInElevator(give: string?, toonify: boolean?)
 end --[[
 example usage:
 
-print(API.GetPlayersInElevator("number") .. " players in the elevator") -> "3 players in the elevator"
-print(API.GetPlayersInElevator("stringList")) -> "You, ThisGuy, ThatGuy"
-print(API.GetPlayersInElevator("stringList", true)) -> "Poppy, Shelly, Astro"
+print(API.GetPlayersInElevator("number") .. " players in the elevator") → "3 players in the elevator"
+print(API.GetPlayersInElevator("stringList")) → "You, ThisGuy, ThatGuy"
+print(API.GetPlayersInElevator("stringList", true)) → "Poppy, Shelly, Astro"
 
 for _, player in ipairs(API.GetPlayersInElevator()) do
-	print(player.Name .. " is in the elevator") -> "ThisGuy is in the elevator"
+	print(player.Name .. " is in the elevator") → "ThisGuy is in the elevator"
 end
 ]]
 
@@ -650,12 +652,12 @@ function API.GetPlayersOutOfElevator(give: string?, toonify: boolean?)
 end --[[
 example usage:
 
-print(API.GetPlayersOutOfElevator("number") .. " players still outside") -> "1 players still outside"
-print(API.GetPlayersOutOfElevator("stringList")) -> "OtherGuy"
-print(API.GetPlayersOutOfElevator("stringList", true)) -> "Pebble"
+print(API.GetPlayersOutOfElevator("number") .. " players still outside") → "1 players still outside"
+print(API.GetPlayersOutOfElevator("stringList")) → "OtherGuy"
+print(API.GetPlayersOutOfElevator("stringList", true)) → "Pebble"
 
 if API.GetPlayersOutOfElevator("number") == 0 then
-	print("Everyone is in the elevator") -> "Everyone is in the elevator"
+	print("Everyone is in the elevator") → "Everyone is in the elevator"
 end
 ]]
 
@@ -686,13 +688,13 @@ function API.TrinketActiveFor(trinket: string?, player: Instance?)
 end --[[
 example usage:
 
-print(API.TrinketActiveFor("VeeRemote")) -> true
+print(API.TrinketActiveFor("VeeRemote")) → true
 
 local thisguy = plrs.ThisGuy
-print(API.TrinketActiveFor("Wrench", thisguy)) -> false
+print(API.TrinketActiveFor("Wrench", thisguy)) → false
 
 if API.TrinketActiveFor("DuckToy") then
-	print("Your Duck Toy is active") -> "Your Duck Toy is active"
+	print("Your Duck Toy is active") → "Your Duck Toy is active"
 end
 ]]
 
@@ -707,10 +709,10 @@ function API.GetPlayerToon(player: Instance?)
 end --[[
 example usage:
 
-print("You are playing as " .. API.GetPlayerToon()) -> "You are playing as Boxten"
+print("You are playing as " .. API.GetPlayerToon()) → "You are playing as Boxten"
 
 local thisguy = plrs.ThisGuy
-print(thisguy.Name .. " is playing as " .. API.GetPlayerToon(thisguy)) -> "ThisGuy is playing as Cosmo"
+print(thisguy.Name .. " is playing as " .. API.GetPlayerToon(thisguy)) → "ThisGuy is playing as Cosmo"
 ]]
 
 function API.PlayerCanUseAbility(player: Instance?)
@@ -724,14 +726,14 @@ function API.PlayerCanUseAbility(player: Instance?)
 end --[[
 example usage:
 
-print(API.PlayerCanUseAbility()) -> true
+print(API.PlayerCanUseAbility()) → true
 
 local thisguy = plrs.ThisGuy
 local thisguycan = API.PlayerCanUseAbility(thisguy) and "" or "not"
-print(thisguy.Name .. " can" .. thisguycan .. " use their ability") -> "ThisGuy cannot use their ability"
+print(thisguy.Name .. " can" .. thisguycan .. " use their ability") → "ThisGuy cannot use their ability"
 
 if API.PlayerCanUseAbility() then
-	print("Your ability is ready") -> "Your ability is ready"
+	print("Your ability is ready") → "Your ability is ready"
 end
 ]]
 
@@ -776,12 +778,12 @@ function API.GetTwistedsOnFloor(give: string?, mapNames: boolean?)
 end --[[
 example usage:
 
-print(API.GetTwistedsOnFloor("number") .. " twisteds on this floor") -> "3 twisteds on this floor"
-print(API.GetTwistedsOnFloor("stringList")) -> "BoxtenMonster, CosmoMonster, SproutMonster"
-print(API.GetTwistedsOnFloor("stringList", true)) -> "Twisted Boxten, Twisted Cosmo, Twisted Sprout"
+print(API.GetTwistedsOnFloor("number") .. " twisteds on this floor") → "3 twisteds on this floor"
+print(API.GetTwistedsOnFloor("stringList")) → "BoxtenMonster, CosmoMonster, SproutMonster"
+print(API.GetTwistedsOnFloor("stringList", true)) → "Twisted Boxten, Twisted Cosmo, Twisted Sprout"
 
 for _, twisted in ipairs(API.GetTwistedsOnFloor()) do
-	print(twisted.Name) -> "BoxtenMonster"
+	print(twisted.Name) → "BoxtenMonster"
 end
 ]]
 
@@ -823,12 +825,12 @@ function API.GetItemsOnFloor(give: string?, mapNames: boolean?)
 end --[[
 example usage:
 
-print(API.GetItemsOnFloor("number") .. " items on the floor") -> "5 items on the floor"
-print(API.GetItemsOnFloor("stringList")) -> "Bandage, Bandage, SpeedCandy"
-print(API.GetItemsOnFloor("stringList", true)) -> "Bandage, Bandage, Speed Candy"
+print(API.GetItemsOnFloor("number") .. " items on the floor") → "5 items on the floor"
+print(API.GetItemsOnFloor("stringList")) → "Bandage, Bandage, SpeedCandy"
+print(API.GetItemsOnFloor("stringList", true)) → "Bandage, Bandage, Speed Candy"
 
 for _, item in ipairs(API.GetItemsOnFloor()) do
-	print(item.Name) -> "Bandage"
+	print(item.Name) → "Bandage"
 end
 ]]
 
@@ -891,12 +893,12 @@ example usage:
 
 local machine = API.Get("machines"):GetChildren()[1]
 
-print(API.GetMachineInfo(machine, "type")) -> "Treadmill"
-print(API.GetMachineInfo(machine, "completed")) -> false
-print(API.GetMachineInfo(machine, "posessed")) -> true
+print(API.GetMachineInfo(machine, "type")) → "Treadmill"
+print(API.GetMachineInfo(machine, "completed")) → false
+print(API.GetMachineInfo(machine, "posessed")) → true
 
 local info = API.GetMachineInfo(machine)
-print(info.type .. " machine | debuffed: " .. tostring(info.debuffed) .. " | inspired: " .. tostring(info.inspired)) -> "Treadmill machine | debuffed: false | inspired: true"
+print(info.type .. " machine | debuffed: " .. tostring(info.debuffed) .. " | inspired: " .. tostring(info.inspired)) → "Treadmill machine | debuffed: false | inspired: true"
 ]]
 
 function API.CountTwistedObstacles()
@@ -924,8 +926,40 @@ example usage:
 
 local obstacles = API.CountTwistedObstacles()
 if obstacles > 0 then
-	print("There are " .. obstacles .. " Twisted obstacles in this room") -> "There are 2 Twisted obstacles in this room"
+	print("There are " .. obstacles .. " Twisted obstacles in this room") → "There are 2 Twisted obstacles in this room"
 end
+]]
+
+function API.GetStarPillowOwner(pillow: Instance?, give: string?, mapNames: boolean?)
+	give = give or "character" -- name, character, instance
+	mapNames = mapNames or false
+
+	API.Assert(pillow ~= nil and typeof(pillow) == "Instance", ".GetStarPillowOwner: Invalid \"pillow\" parameter. Make sure \"pillow\" exists and is an Instance.")
+	API.Assert(mapNames ~= nil and typeof(mapNames) == "boolean", ".GetStarPillowOwner: Invalid \"mapNames\" parameter. Make sure \"mapNames\" is a boolean.")
+
+	local kind = pillow:GetAttribute("PillowKind") or "Toon"
+	local owner = pillow:FindFirstChild("StarPillowTarget") and pillow.StarPillowTarget.Value or nil
+
+	if give == "character" or give == "instance" then
+		if kind == "Twisted" then
+			give = API.Get("twisteds"):FindFirstChild("AstroMonster")
+		elseif kind == "Toon" then
+			give = owner
+		end
+	elseif give == "name" then
+		if kind == "Twisted" then
+			give = mapNames and "Twisted Astro" or "AstroMonster" 
+		elseif kind == "Toon" then
+			give = owner and owner.Name or nil
+		end
+	end
+
+	return give
+end --[[
+example usage:
+
+print("This random Star pillow belongs to " .. API.GetStarPillowOwner(API.Get("starpillows")[1], "name") .. ".") → "This random Star pillow belongs to ThisGuy."
+print("This random Star pillow belongs to " .. API.GetStarPillowOwner(API.Get("starpillows")[3], "name", true) .. ".") → "This random Star pillow belongs to Twisted Astro."
 ]]
 
 -------------------------------------------------------------------------------------------------------------------------------
@@ -970,12 +1004,12 @@ example usage:
 
 local boxten = API.Get("twisteds").BoxtenMonster
 
-print(API.GetTwistedInfo(boxten, "mappedName")) -> "Twisted Boxten"
-print(API.GetTwistedInfo(boxten, "rarity")) -> "Common"
-print(API.GetTwistedInfo(boxten, "chasing")) -> false
+print(API.GetTwistedInfo(boxten, "mappedName")) → "Twisted Boxten"
+print(API.GetTwistedInfo(boxten, "rarity")) → "Common"
+print(API.GetTwistedInfo(boxten, "chasing")) → false
 
 local info = API.GetTwistedInfo(boxten)
-print(info.mappedName .. " (" .. info.rarity .. ") | sight radius: " .. info.sightRadius .. " | research: " .. info.research .. "%") -> "Twisted Boxten (Common) | sight radius: 40 | research: 100%"
+print(info.mappedName .. " (" .. info.rarity .. ") | sight radius: " .. info.sightRadius .. " | research: " .. info.research .. "%") → "Twisted Boxten (Common) | sight radius: 40 | research: 100%"
 ]]
 
 function API.GetTwistedsChasingPlayer(player: Instance?, give: string?, mapNames: boolean?)
@@ -1029,10 +1063,10 @@ function API.GetTwistedsChasingPlayer(player: Instance?, give: string?, mapNames
 end --[[
 example usage:
 
-print(API.GetTwistedsChasingPlayer(plr, "stringList", true) .. " are chasing you") -> "Twisted Boxten, Twisted Cosmo, Twisted Sprout are chasing you"
+print(API.GetTwistedsChasingPlayer(plr, "stringList", true) .. " are chasing you") → "Twisted Boxten, Twisted Cosmo, Twisted Sprout are chasing you"
 
 local thisguy = plrs.ThisGuy
-print(API.GetTwistedsChasingPlayer(thisguy, "stringList") .. " are chasing " .. thisguy.Name) -> "BoxtenMonster, CosmoMonster, SproutMonster are chasing ThisGuy"
+print(API.GetTwistedsChasingPlayer(thisguy, "stringList") .. " are chasing " .. thisguy.Name) → "BoxtenMonster, CosmoMonster, SproutMonster are chasing ThisGuy"
 ]]
 
 local lasthits = setmetatable({}, { __mode = "k" })
@@ -1044,7 +1078,7 @@ local sessionmaid = nil
 local function recordhit(twisted)
 	local chasing = twisted and twisted:FindFirstChild("ChasingValue")
 	local target = chasing and chasing.Value
-	
+
 	if typeof(target) ~= "Instance" then 
 		API.Debug("recordhit: Target is not a valid instance for twisted: " .. twisted and twisted.Name)
 		return 
@@ -1089,7 +1123,7 @@ end
 
 local function monitorroom()
 	API.Debug("monitorroom: Called / restarted.")
-	
+
 	if sessionmaid then
 		API.Debug("monitorroom: Destroying previous session maid.")
 		sessionmaid:destroy()
@@ -1100,7 +1134,7 @@ local function monitorroom()
 
 	maid:spawn(function()
 		API.Debug("monitorroom: Waiting for Twisteds folder...")
-		
+
 		local folder = API.Get("twisteds")
 
 		while not folder do
@@ -1154,10 +1188,10 @@ function API.GetPlayerLastHitBy(player: Instance?, mapName: boolean?)
 end --[[
 example usage:
 
-print("You were last hit by " .. API.GetPlayerLastHitBy(game.Players.LocalPlayer, true)) -> "You were last hit by Twisted Boxten"
+print("You were last hit by " .. API.GetPlayerLastHitBy(game.Players.LocalPlayer, true)) → "You were last hit by Twisted Boxten"
 
 local thisguy = plrs.ThisGuy
-print(thisguy.Name .. " was last hit by " .. API.GetPlayerLastHitBy(thisguy)) -> "ThisGuy was last hit by CosmoMonster"
+print(thisguy.Name .. " was last hit by " .. API.GetPlayerLastHitBy(thisguy)) → "ThisGuy was last hit by CosmoMonster"
 ]]
 
 function API.GetTwistedRarity(twisted: Instance? | string?)
@@ -1173,8 +1207,8 @@ function API.GetTwistedRarity(twisted: Instance? | string?)
 end --[[
 example usage:
 
-print(API.GetTwistedRarity(API.Get("twisteds").BoxtenMonster)) -> "Common"
-print(API.GetTwistedRarity("SproutMonster")) -> "Main"
+print(API.GetTwistedRarity(API.Get("twisteds").BoxtenMonster)) → "Common"
+print(API.GetTwistedRarity("SproutMonster")) → "Main"
 ]]
 
 function API.GetTwistedResearchFromPlayer(twisted: Instance? | string?, player: Instance?)
@@ -1200,11 +1234,11 @@ end --[[
 example usage:
 
 local boxtenresearch = API.GetTwistedResearchFromPlayer(API.Get("twisteds").BoxtenMonster)
-print(boxtenresearch) -> 100
+print(boxtenresearch) → 100
 
 local thisguy = plrs.ThisGuy
 local cosmoresearch = API.GetTwistedResearchFromPlayer("CosmoMonster", thisguy)
-print(thisguy.Name .. "'s research on Twisted Cosmo: " .. cosmoresearch .. "%") -> "ThisGuy's research on Twisted Cosmo: 69%"
+print(thisguy.Name .. "'s research on Twisted Cosmo: " .. cosmoresearch .. "%") → "ThisGuy's research on Twisted Cosmo: 69%"
 ]]
 
 -------------------------------------------------------------------------------------------------------------------------------
