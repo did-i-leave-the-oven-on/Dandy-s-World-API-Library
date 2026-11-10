@@ -35,6 +35,9 @@ local rst = cloneref(game:GetService("ReplicatedStorage"))
 local coregui = cloneref(game:GetService("CoreGui"))
 
 local rs = cloneref(game:GetService("RunService"))
+local https = cloneref(game:GetService("HttpService"))
+
+local request = request or (syn and syn.request) or (http and http.request)
 
 -------------------------------------------------------------------------------------------------------------------------------
 
@@ -1239,6 +1242,57 @@ print(boxtenresearch) → 100
 local thisguy = plrs.ThisGuy
 local cosmoresearch = API.GetTwistedResearchFromPlayer("CosmoMonster", thisguy)
 print(thisguy.Name .. "'s research on Twisted Cosmo: " .. cosmoresearch .. "%") → "ThisGuy's research on Twisted Cosmo: 69%"
+]]
+
+-------------------------------------------------------------------------------------------------------------------------------
+
+-- wiki things
+local function bywiki(template)
+	local encoded = "https://dandys-world-robloxhorror.fandom.com/api.php?action=parse&page=Template%3A" .. template .. "&prop=wikitext&format=json"
+
+	local ok, response = pcall(request, {Url = encoded, Method = "GET"})
+	if not ok or not response or not response.Body then return nil end
+
+	local ok2, data = pcall(https.JSONDecode, https, response.Body)
+	if not ok2 or not data or not data.parse then return nil end
+
+	return data.parse.wikitext["*"]
+end
+
+function API.GetTwistedOfTheDay()
+	local twistedoftheday = bywiki("TOTDName")
+	
+	if twistedoftheday then
+		return twistedoftheday:match("^%s*(.-)%s*$")
+	end
+end --[[
+example usage:
+
+print("The current Twisted of the day is " .. API.GetTwistedOfTheDay() .. ".") → "The current Twisted of the day is Twisted Boxten."
+]]
+
+function API.GetPlayableToonsCount()
+	local toons = bywiki("ToonAmount")
+	
+	if toons then
+		return toons:match("|(%d+)%}%}")
+	end
+end --[[
+example usage:
+
+print("There are currently " .. API.GetPlayableToonsCount() .. " playable Toons.") → "There are currently 40 playable toons."
+]]
+
+function API.GetTwistedsCount()
+	local twisteds = bywiki("TwistedAmount")
+	
+	if twisteds then
+		return twisteds:match("|(%d+)%}%}")
+	end
+end --[[
+example usage:
+
+print("There are currently " .. API.GetTwistedsCount() .. " Twisteds that have a chance of spawning on a floor.") → "There are currently 42 Twisteds that have a chance of spawning on a floor."
 ]]
 
 -------------------------------------------------------------------------------------------------------------------------------
