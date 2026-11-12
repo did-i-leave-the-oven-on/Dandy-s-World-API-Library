@@ -32,11 +32,11 @@ local tisha = loadstring(game:HttpGet("https://raw.githubusercontent.com/did-i-l
 local ws = cloneref(game:GetService("Workspace"))
 local plrs = cloneref(game:GetService("Players"))
 local rst = cloneref(game:GetService("ReplicatedStorage"))
-local coregui = cloneref(game:GetService("CoreGui"))
 
 local rs = cloneref(game:GetService("RunService"))
 local https = cloneref(game:GetService("HttpService"))
 
+local coregui = cloneref(game:GetService("CoreGui"))
 local request = request or (syn and syn.request) or (http and http.request)
 
 -------------------------------------------------------------------------------------------------------------------------------
@@ -44,17 +44,89 @@ local request = request or (syn and syn.request) or (http and http.request)
 -- debug
 local debugmode = loadArgs.debugMode or false
 
+local CC = {
+	cols = {
+		["o"] = "255, 255, 255",
+		["err"] = "255, 120, 120",
+		["succ"] = "80, 255, 80",
+		["w"] = "245, 242, 66",
+		["i"] = "104, 143, 252",
+	},
+	registry = {}
+}
+
+rs.Heartbeat:Connect(function()
+	local devConsole = coregui:FindFirstChild("DevConsoleMaster")
+	if not devConsole then return end
+
+	local devWindow = devConsole:FindFirstChild("DevConsoleWindow", true)
+	if devWindow and not devWindow.Visible then return end
+
+	for _, v in pairs(devConsole:GetDescendants()) do
+		if v:IsA("TextLabel") then
+			v.RichText = true
+
+			if string.find(v.Text, "<font", 1, true) then
+				continue
+			end
+
+			for rawText, richText in pairs(CC.registry) do
+				if #v.Text >= #rawText and string.sub(v.Text, -#rawText) == rawText then
+					local prefix = string.sub(v.Text, 1, #v.Text - #rawText)
+
+					if prefix == "" or string.match(prefix, "^%d%d:%d%d:%d%d %-%- $") then
+						v.Text = prefix .. richText
+						break
+					end
+				end
+			end
+		end
+	end
+end)
+
+function CC.print(color, text, size)
+	if not CC.cols[color] then return end
+	text = tostring(text)
+
+	local detect = "[Sprout]:"
+	local richtext
+
+	if text:sub(1, #detect) == detect then
+		local character = 'rgb(255, 87, 87)'
+		local rest = text:sub(#detect + 1)
+
+		richtext = '<font color="' .. character .. '">' .. detect .. '</font><font color="rgb(255, 255, 255)">' .. rest .. '</font>'
+	else
+		richtext = '<font color="rgb(' .. CC.cols[color] .. ')">' .. text .. '</font>'
+	end
+
+	if size then
+		richtext = richtext:gsub(
+			"<font",
+			'<font size="' .. tostring(size) .. '"',
+			1
+		)
+	end
+
+	CC.registry[text] = richtext
+	print(text)
+end
+
 function API.Print(message: string)
-	print("[Sprout]: " .. message)
+	CC.print("o", "[Sprout]: " .. message)
 end
 
 function API.Warn(message: string)
-	warn("[Sprout]: " .. message)
+	CC.print("w", "[Sprout]: " .. message)
 end
 getgenv.DWAPIL_Warn = API.Warn
 
 function API.Error(message: string)
-	error("[Sprout]: " .. message, 2)
+	CC.print("err", "[Sprout]: " .. message, 2)
+end
+
+function API.Success(message: string)
+	CC.print("succ", "[Sprout]: " .. message, 2)
 end
 
 function API.Assert(condition: any, message: string)
@@ -65,9 +137,18 @@ function API.Assert(condition: any, message: string)
 	return condition
 end
 
-function API.Debug(message: string)
+function API.Debug(message: string, statementType: string)
 	if not debugmode then return end
-	print("[Sprout]: " .. message)
+	
+	if statementType == "print" then
+		API.Print(message)
+	elseif statementType == "warn" then
+		API.Warn(message)
+	elseif statementType == "err" then
+		API.Error(message)
+	elseif statementType == "succ" then
+		API.Success(message)
+	end
 end
 
 -------------------------------------------------------------------------------------------------------------------------------
@@ -75,6 +156,7 @@ end
 -- player variables
 local plr = plrs.LocalPlayer
 local char = plr.Character or nil
+local root = char and char:WaitForChild("HumanoidRootPart") or nil
 local hum = char and char:FindFirstChild("Humanoid") or nil
 
 local plrgui = plr:WaitForChild("PlayerGui")
@@ -84,6 +166,7 @@ function API.UpdateCharacterRefs()
 	char = plr.CharacterAdded:Wait()
 
 	if char then
+		root = char:WaitForChild("HumanoidRootPart") or nil
 		hum = char:FindFirstChild("Humanoid") or nil
 		plrstats = char:FindFirstChild("Stats") or nil
 	end
@@ -94,7 +177,7 @@ end
 -- game variables
 local inrun = game.PlaceId == 16552821455
 
-API.PlayersFolder = inrun and ws:WaitForChild("InGamePlayers") or nil
+API.PlayersFolder = inrun and ws:WaitForChild("InGamePlayers") or ws:WaitForChild("Players") or nil
 API.Elevator = inrun and ws:WaitForChild("Elevators"):WaitForChild("Elevator") or nil
 API.FakeElevator = nil
 API.GameInfoFolder = inrun and ws:WaitForChild("Info") or nil
@@ -294,7 +377,7 @@ end --[[
 example usage:
 
 print("Floor " .. API.GetGameInfo("floor")) → "Floor 12"
-print(API.GetGameInfo("machinesLeft") .. " machines left!") → "2 machines left!"
+print(API.GetGameInfo("machinesLeft") .. " machines left") → "2 machines left"
 
 local info = API.GetGameInfo()
 print(info.playersAlive .. " players alive | " .. info.machinesCompleted .. "/" .. info.machinesRequired .. " machines done") → "4 players alive | 3/5 machines done"
@@ -310,7 +393,7 @@ end --[[
 example usage:
 
 local panicking = API.Panicking() and "on" or "off"
-print("Panic mode is " .. panicking .. ".") → "Panic mode is off."
+print("Panic mode is " .. panicking) → "Panic mode is off"
 ]]
 
 function API.IsBreakRoom()
@@ -394,6 +477,10 @@ function API.Get(ins: string?)
 
 	if ins == "room" then
 		return API.RoomFolder:FindFirstChildWhichIsA("Model") or nil
+	elseif ins == "freearea" then
+		return API.FreeAreaFolder
+	elseif ins == "players" then
+		return API.PlayersFolder
 	elseif ins == "items" then
 		return API.ItemsFolder
 	elseif ins == "twisteds" then
@@ -740,6 +827,85 @@ if API.PlayerCanUseAbility() then
 end
 ]]
 
+function API.NearTwisted(player: Instance?, studs: number?, raycastCheck: boolean?)
+	API.Assert(inrun == true, ".NearTwisted: You can only use this function in a run.")
+	API.Assert(studs ~= nil and typeof(studs) == "number", ".NearTwisted: Invalid \"studs\" parameter. Make sure \"studs\" exists and is a number.")
+
+	player = player or plr
+	raycastCheck = raycastCheck or false
+
+	API.Assert(player ~= nil and player:IsA("Player"), ".NearTwisted: Invalid \"player\" parameter. Make sure \"player\" is a Player.")
+	API.Assert(raycastCheck ~= nil and typeof(raycastCheck) == "boolean", ".NearTwisted: Invalid \"raycastCheck\" parameter. Make sure \"raycastCheck\" is a boolean.")
+
+	local playerChar = player.Character
+	local playerRoot = playerChar and playerChar:FindFirstChild("HumanoidRootPart")
+
+	if not API.TwistedsFolder or not playerRoot then 
+		return false 
+	end
+
+	for _, obj in ipairs(API.Get("twisteds"):GetChildren()) do
+		if typeof(obj) == "Instance" and obj:IsA("Model") then
+			local name = obj.Name
+
+			if name:find("Blott") or name:find("Connie") or name:find("Waxwell") or name:find("Rodger") then
+				continue
+			end
+
+			local twistedpos = nil
+
+			pcall(function()
+				twistedpos = obj:GetPivot().Position
+			end)
+
+			if not twistedpos then
+				local twistedroot = obj:FindFirstChild("HumanoidRootPart") or obj.PrimaryPart
+				if twistedroot and twistedroot:IsA("BasePart") then
+					twistedpos = twistedroot.Position
+				end
+			end
+
+			if twistedpos then
+				local distance = (twistedpos - playerRoot.Position).Magnitude
+				if distance <= studs then
+					if raycastCheck then
+						local origin = playerRoot.Position
+						local direction = twistedpos - origin
+
+						local params = RaycastParams.new()
+						params.FilterType = Enum.RaycastFilterType.Exclude
+						params.FilterDescendantsInstances = {playerChar, obj}
+						params.IgnoreWater = true
+
+						local result = ws:Raycast(origin, direction, params)
+						if not result then
+							return true
+						end
+					else
+						return true
+					end
+				end
+			end
+		end
+	end
+
+	return false
+end --[[
+example usage:
+
+if API.NearTwisted(plrs.ThisGuy, 20) then
+	warn("ThisGuy is 20 studs near a Twisted") → "ThisGuy is 20 studs near a Twisted"
+else
+	print("ThisGuy is not 20 studs near a Twisted") → "ThisGuy is not 20 studs near a Twisted"
+end
+
+if API.NearTwisted(plrs.ThisGuy, API.GetTwistedInfo(API.GetTwistedInfo(API.Get("twisteds").BoxtenMonster, "sightRadius"), true) then
+	warn("ThisGuy is 20 studs within Twisted Boxten's sight") → "ThisGuy is 20 studs within Twisted Boxten's sight"
+else
+	print("ThisGuy is not 20 studs within Twisted Boxten's sight") → "ThisGuy is not 20 studs within Twisted Boxten's sight"
+end
+]]
+
 -------------------------------------------------------------------------------------------------------------------------------
 
 -- floor handling
@@ -965,6 +1131,32 @@ print("This random Star pillow belongs to " .. API.GetStarPillowOwner(API.Get("s
 print("This random Star pillow belongs to " .. API.GetStarPillowOwner(API.Get("starpillows")[3], "name", true) .. ".") → "This random Star pillow belongs to Twisted Astro."
 ]]
 
+function API.IsFloorLoaded()
+	return API.IsBreakRoom() or API.GetGameInfo("gameMessage"):find("Doors open")
+end --[[
+example usage:
+
+local isit = API.IsFloorLoaded()
+if isit then
+	warn("The floor is fully loaded") → "The floor is fully loaded"
+else
+	print("The floor has not finished loading") → "The floor has not finished loading"
+end
+]]
+
+function API.IsFloorUnloading()
+	return API.GetGameInfo("gameMessage"):find("Quickly") and not API.Get("elevator"):FindFirstChild("Opened").Value
+end --[[
+example usage:
+
+local isit = API.IsFloorUnloading()
+if isit then
+	warn("The floor is unloading") → "The floor is unloading"
+else
+	print("The floor is fully loaded") → "The floor is fully loaded"
+end
+]]
+
 -------------------------------------------------------------------------------------------------------------------------------
 
 -- twisted handling
@@ -972,7 +1164,7 @@ function API.GetTwistedInfo(twisted: Instance?, give: string?)
 	API.Assert(inrun == true, ".GetTwistedInfo: You can only use this function in a run.")
 	API.Assert(twisted ~= nil and typeof(twisted) == "Instance", ".GetTwistedInfo: Invalid \"twisted\" parameter. Make sure \"twisted\" exists and is an Instance.")
 
-	give = give or "table" -- mappedName, wanderSpeed, chaseSpeed, rarity, chasing, hitboxRadius, detectionRadius, sightRadius, hearingRadius, research, table
+	give = give or "table" -- mappedName, wanderSpeed, chaseSpeed, rarity, chasing, hitboxRadius, detectionRadius, sightRadius, hearingRadius, research, awake, table
 
 	API.Assert(give ~= nil and typeof(give) == "string", ".GetTwistedInfo: Invalid \"give\" parameter. Make sure \"give\" is a string.")
 
@@ -983,6 +1175,11 @@ function API.GetTwistedInfo(twisted: Instance?, give: string?)
 	local chaser = not cannotchase and twisted:FindFirstChild("Chaser")
 
 	local chasingvalue = not cannotchase and twisted:FindFirstChild("ChasingValue")
+	
+	local awake = false
+	if name == "RodgerMonster" or name == "RazzleDazzleMonster" then
+		awake = twisted:GetAttribute("Awake") == true
+	end
 
 	local data = {
 		mappedName = API.MapName(name),
@@ -995,6 +1192,7 @@ function API.GetTwistedInfo(twisted: Instance?, give: string?)
 		sightRadius = (chaser and chaser:FindFirstChild("VisionRadius")) and chaser.VisionRadius.Value or 0,
 		hearingRadius = (chaser and chaser:FindFirstChild("HearingRadius")) and chaser.HearingRadius.Value or 0,
 		research = API.GetTwistedResearchFromPlayer(twisted),
+		awake = awake
 	}
 
 	if give == "table" then
@@ -1083,52 +1281,52 @@ local function recordhit(twisted)
 	local target = chasing and chasing.Value
 
 	if typeof(target) ~= "Instance" then 
-		API.Debug("recordhit: Target is not a valid instance for twisted: " .. twisted and twisted.Name)
+		API.Debug("warn", "recordhit: Target is not a valid instance for twisted: " .. twisted and twisted.Name)
 		return 
 	end
 
 	if target:IsA("Player") then target = target.Character end
 	if not target then 
-		API.Debug("recordhit Target character could not be resolved for twisted: " .. twisted and twisted.Name)
+		API.Debug("warn", "recordhit Target character could not be resolved for twisted: " .. twisted and twisted.Name)
 		return 
 	end
 
 	lasthits[target] = { twisted = twisted }
-	API.Debug("recordhit: Success! Twisted \"" .. twisted.Name .. "\" hit target character \"" .. target.Name .. "\"")
+	API.Debug("succ", "recordhit: Success! Twisted \"" .. twisted.Name .. "\" hit target character \"" .. target.Name .. "\"")
 end
 
 local function monitortwisted(twisted)
 	if not twisted:IsA("Model") or monitored[twisted] then return end
-	API.Debug("monitortwisted: Monitoring new Twisted: " .. twisted.Name)
+	API.Debug("print", "monitortwisted: Monitoring new Twisted: " .. twisted.Name)
 
 	local maid = tisha.new()
 	monitored[twisted] = maid
 
 	maid:give(twisted:GetAttributeChangedSignal("Attacking"):Connect(function()
-		local isAttacking = twisted:GetAttribute("Attacking")
-		API.Debug("monitortwisted: Twisted \"" .. twisted.Name .. "\"'s \"Attacking\" attribute changed to: " .. tostring(isAttacking))
-		if isAttacking == true then
+		local attacking = twisted:GetAttribute("Attacking")
+		API.Debug("print", "monitortwisted: Twisted \"" .. twisted.Name .. "\"'s \"Attacking\" attribute changed to: " .. tostring(attacking))
+		if attacking == true then
 			recordhit(twisted)
 		end
 	end))
 
 	maid:give(twisted.Destroying:Connect(function()
-		API.Debug("monitortwisted: Twisted model \"" .. twisted.Name .. "\" destroyed / removed.")
+		API.Debug("warn", "monitortwisted: Twisted model \"" .. twisted.Name .. "\" destroyed / removed.")
 		monitored[twisted] = nil
 		maid:destroy()
 	end))
 
 	if twisted:GetAttribute("Attacking") == true then
-		API.Debug("monitortwisted: Twisted " .. twisted.Name .. " is already attacking upon initialization.")
+		API.Debug("print", "monitortwisted: Twisted " .. twisted.Name .. " is already attacking upon initialization.")
 		recordhit(twisted)
 	end
 end
 
 local function monitorroom()
-	API.Debug("monitorroom: Called / restarted.")
+	API.Debug("print", "monitorroom: Called / restarted.")
 
 	if sessionmaid then
-		API.Debug("monitorroom: Destroying previous session maid.")
+		API.Debug("print", "monitorroom: Destroying previous session maid.")
 		sessionmaid:destroy()
 	end
 
@@ -1136,7 +1334,7 @@ local function monitorroom()
 	sessionmaid = maid
 
 	maid:spawn(function()
-		API.Debug("monitorroom: Waiting for Twisteds folder...")
+		API.Debug("print", "monitorroom: Waiting for Twisteds folder...")
 
 		local folder = API.Get("twisteds")
 
@@ -1144,28 +1342,28 @@ local function monitorroom()
 			task.wait(0.1)
 			folder = API.Get("twisteds")
 		end
-		API.Debug("monitorroom: Twisteds folder found!")
+		API.Debug("succ", "monitorroom: Twisteds folder found!")
 
-		API.Debug("monitorroom: Waiting for floor...")
+		API.Debug("print", "monitorroom: Waiting for floor...")
 		repeat task.wait(0.1) until API.GetGameInfo("floorActive") == true
-		API.Debug("monitorroom: Floor is now active.")
+		API.Debug("print", "monitorroom: Floor is now active.")
 
 		local children = folder:GetChildren()
-		API.Debug("monitorroom: Scanning " .. #children .. " existing children in Twisteds folder...")
+		API.Debug("print", "monitorroom: Scanning " .. #children .. " existing children in Twisteds folder...")
 		for _, twisted in ipairs(children) do
 			monitortwisted(twisted)
 		end
 
 		maid:give(folder.ChildAdded:Connect(function(twisted)
-			API.Debug("monitorroom: ChildAdded event fired in Twisteds folder for Twisted: " .. twisted.Name)
+			API.Debug("print", "monitorroom: ChildAdded event fired in Twisteds folder for Twisted: " .. twisted.Name)
 			monitortwisted(twisted)
 		end))
 	end)
 end
 
 if inrun then
-	mainmaid:give(API.RoomFolder.ChildAdded:Connect(function()
-		API.Debug(".GetPlayerLastHitBy: ChildAdded event fired for the current room. Resetting...")
+	mainmaid:give(API.Get("room").ChildAdded:Connect(function()
+		API.Debug("print", ".GetPlayerLastHitBy: ChildAdded event fired for the current room. Resetting...")
 		monitorroom()
 	end), "roomadded")
 
@@ -1261,7 +1459,7 @@ end
 
 function API.GetTwistedOfTheDay()
 	local twistedoftheday = bywiki("TOTDName")
-	
+
 	if twistedoftheday then
 		return twistedoftheday:match("^%s*(.-)%s*$")
 	end
@@ -1273,7 +1471,7 @@ print("The current Twisted of the day is " .. API.GetTwistedOfTheDay() .. ".") �
 
 function API.GetPlayableToonsCount()
 	local toons = bywiki("ToonAmount")
-	
+
 	if toons then
 		return toons:match("|(%d+)%}%}")
 	end
@@ -1285,7 +1483,7 @@ print("There are currently " .. API.GetPlayableToonsCount() .. " playable Toons.
 
 function API.GetTwistedsCount()
 	local twisteds = bywiki("TwistedAmount")
-	
+
 	if twisteds then
 		return twisteds:match("|(%d+)%}%}")
 	end
