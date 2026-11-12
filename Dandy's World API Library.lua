@@ -32,12 +32,13 @@ local tisha = loadstring(game:HttpGet("https://raw.githubusercontent.com/did-i-l
 local ws = cloneref(game:GetService("Workspace"))
 local plrs = cloneref(game:GetService("Players"))
 local rst = cloneref(game:GetService("ReplicatedStorage"))
+local coregui = cloneref(game:GetService("CoreGui"))
 
 local rs = cloneref(game:GetService("RunService"))
 local https = cloneref(game:GetService("HttpService"))
 
-local coregui = cloneref(game:GetService("CoreGui"))
 local request = request or (syn and syn.request) or (http and http.request)
+local placeid = game.PlaceId
 
 -------------------------------------------------------------------------------------------------------------------------------
 
@@ -175,13 +176,19 @@ end
 -------------------------------------------------------------------------------------------------------------------------------
 
 -- game variables
-local inrun = game.PlaceId == 16552821455
+API.LobbyPlaceID = 16116270224
+API.RunPlaceID = 16552821455
+API.RoleplayServerID = 18984416148
 
-API.PlayersFolder = inrun and ws:WaitForChild("InGamePlayers") or ws:WaitForChild("Players") or nil
-API.Elevator = inrun and ws:WaitForChild("Elevators"):WaitForChild("Elevator") or nil
+API.InLobby = placeid == API.LobbyPlaceID
+API.InRun = placeid == API.RunPlaceID
+API.InRoleplayServer = placeid == API.RoleplayServerID
+
+API.PlayersFolder = API.InRun and ws:WaitForChild("InGamePlayers") or ws:WaitForChild("Players") or nil
+API.Elevator = API.InRun and ws:WaitForChild("Elevators"):WaitForChild("Elevator") or nil
 API.FakeElevator = nil
-API.GameInfoFolder = inrun and ws:WaitForChild("Info") or nil
-API.RoomFolder = inrun and ws:WaitForChild("CurrentRoom") or nil
+API.GameInfoFolder = API.InRun and ws:WaitForChild("Info") or nil
+API.RoomFolder = API.InRun and ws:WaitForChild("CurrentRoom") or nil
 
 API.TwistedsFolder = nil
 API.ItemsFolder = nil
@@ -190,7 +197,7 @@ API.FreeAreaFolder = nil
 API.StarPillowsFolder = nil
 
 function API.UpdateGameRefs()
-	if not inrun then return end
+	if not API.InRun then return end
 
 	if not API.Get then
 		repeat task.wait() until typeof(API.Get) == "function"
@@ -345,7 +352,7 @@ print(API.MapName("BlottMonster")) → "Twisted Blot"
 ]]
 
 function API.GetGameInfo(give: string?)
-	API.Assert(inrun == true, ".GetGameInfo: You can only use this function in a run.")
+	API.Assert(API.InRun == true, ".GetGameInfo: You can only use this function in a run.")
 
 	give = give or "table" -- gameStarted, cardVoting, dandyStoreOpen, floor, floorActive, panicMode, machinesCompleted, machinesRequired, machinesLeft, blackout, playersAlive, boughtNothingForThisManyFloors, gameMessage, table
 
@@ -386,7 +393,7 @@ if API.GetGameInfo("blackout") then print("The lights are out") end → "The lig
 ]]
 
 function API.Panicking()
-	API.Assert(inrun == true, ".Panicking: You can only use this function in a run.")
+	API.Assert(API.InRun == true, ".Panicking: You can only use this function in a run.")
 
 	return API.GetGameInfo("panicMode")
 end --[[
@@ -397,7 +404,7 @@ print("Panic mode is " .. panicking) → "Panic mode is off"
 ]]
 
 function API.IsBreakRoom()
-	API.Assert(inrun == true, ".IsBreakRoom: You can only use this function in a run.")
+	API.Assert(API.InRun == true, ".IsBreakRoom: You can only use this function in a run.")
 
 	return string.lower(plrgui.ScreenGui.Menu.TopBar.FloorNumber.Text):find("break")
 end --[[
@@ -408,7 +415,7 @@ print("Currently " .. hammertime .. " in the break room") → "Currently not in 
 ]]
 
 function API.FetchItemInPlayerInventorySlot(player: Instance?, slot: number?)
-	API.Assert(inrun == true, ".FetchItemInPlayerInventorySlot: You can only use this function in a run.")
+	API.Assert(API.InRun == true, ".FetchItemInPlayerInventorySlot: You can only use this function in a run.")
 
 	player = player or plr
 
@@ -449,7 +456,7 @@ print(thisguy.Name .. " has a " .. API.FetchItemInPlayerInventorySlot(thisguy, 2
 ]]
 
 function API.FetchPlayerTrinketSlot(player: Instance?, slot: number?)
-	API.Assert(inrun == true, ".FetchPlayerTrinketSlot: You can only use this function in a run.")
+	API.Assert(API.InRun == true, ".FetchPlayerTrinketSlot: You can only use this function in a run.")
 
 	player = player or plr
 
@@ -470,7 +477,7 @@ print(thisguy.Name .. " has a " .. API.FetchPlayerTrinketSlot(thisguy, 1) .. " e
 ]]
 
 function API.Get(ins: string?)
-	API.Assert(inrun == true, ".Get: You can only use this function in a run.")
+	API.Assert(API.InRun == true, ".Get: You can only use this function in a run.")
 	API.Assert(ins ~= nil and typeof(ins) == "string", ".Get: Invalid \"ins\" parameter. Make sure \"ins\" is a string.")
 
 	ins = string.lower(ins)
@@ -505,7 +512,7 @@ print(#twisteds:GetChildren() .. " twisteds are on the floor") → "3 twisteds a
 
 -- player handling
 function API.GetPlayerInfo(player: Instance?, give: string?, mapNames: boolean?)
-	API.Assert(inrun == true, ".GetPlayerInfo: You can only use this function in a run.")
+	API.Assert(API.InRun == true, ".GetPlayerInfo: You can only use this function in a run.")
 
 	player = player or plr
 	give = give or "table" -- toon, health, tapes, walkSpeed, runSpeed, icon, inventorySlot1, inventorySlot2, inventorySlot3, inventorySlot4, trinketSlot1, trinketSlot2, abilityActive, dead, table
@@ -579,7 +586,7 @@ print(API.GetPlayerInfo(thisguy, "dead") and "dead" or "alive") → "alive"
 ]]
 
 function API.GetPlayersAlive(give: string?, toonify: boolean?)
-	API.Assert(inrun == true, ".GetPlayersAlive: You can only use this function in a run.")
+	API.Assert(API.InRun == true, ".GetPlayersAlive: You can only use this function in a run.")
 
 	give = give or "table" -- table, stringList, number
 	toonify = toonify or false
@@ -623,7 +630,7 @@ end
 ]]
 
 function API.GetPlayersInElevator(give: string?, toonify: boolean?)
-	API.Assert(inrun == true, ".GetPlayersInElevator: You can only use this function in a run.")
+	API.Assert(API.InRun == true, ".GetPlayersInElevator: You can only use this function in a run.")
 
 	give = give or "table" -- table, stringList, number
 	toonify = toonify or false
@@ -683,7 +690,7 @@ end
 ]]
 
 function API.GetPlayersOutOfElevator(give: string?, toonify: boolean?)
-	API.Assert(inrun == true, ".GetPlayersOutOfElevator: You can only use this function in a run.")
+	API.Assert(API.InRun == true, ".GetPlayersOutOfElevator: You can only use this function in a run.")
 
 	give = give or "table" -- table, stringList, number
 	toonify = toonify or false
@@ -752,7 +759,7 @@ end
 ]]
 
 function API.TrinketActiveFor(trinket: string?, player: Instance?)
-	API.Assert(inrun == true, ".TrinketActiveFor: You can only use this function in a run.")
+	API.Assert(API.InRun == true, ".TrinketActiveFor: You can only use this function in a run.")
 
 	trinket = trinket or "VeeRemote" -- VeeRemote, Wrench, StarPillow, SavoryCharm, ClownHorn, RibbonSpool, DuckToy, VanityMirror, CardboardArmor
 	player = player or plr
@@ -789,7 +796,7 @@ end
 ]]
 
 function API.GetPlayerToon(player: Instance?)
-	API.Assert(inrun == true, ".GetPlayerToon: You can only use this function in a run.")
+	API.Assert(API.InRun == true, ".GetPlayerToon: You can only use this function in a run.")
 
 	player = player or plr
 
@@ -806,7 +813,7 @@ print(thisguy.Name .. " is playing as " .. API.GetPlayerToon(thisguy)) → "This
 ]]
 
 function API.PlayerCanUseAbility(player: Instance?)
-	API.Assert(inrun == true, ".PlayerCanUseAbility: You can only use this function in a run.")
+	API.Assert(API.InRun == true, ".PlayerCanUseAbility: You can only use this function in a run.")
 
 	player = player or plr
 
@@ -828,7 +835,7 @@ end
 ]]
 
 function API.NearTwisted(player: Instance?, studs: number?, raycastCheck: boolean?)
-	API.Assert(inrun == true, ".NearTwisted: You can only use this function in a run.")
+	API.Assert(API.InRun == true, ".NearTwisted: You can only use this function in a run.")
 	API.Assert(studs ~= nil and typeof(studs) == "number", ".NearTwisted: Invalid \"studs\" parameter. Make sure \"studs\" exists and is a number.")
 
 	player = player or plr
@@ -910,7 +917,7 @@ end
 
 -- floor handling
 function API.GetTwistedsOnFloor(give: string?, mapNames: boolean?)
-	API.Assert(inrun == true, ".GetTwistedsOnFloor: You can only use this function in a run.")
+	API.Assert(API.InRun == true, ".GetTwistedsOnFloor: You can only use this function in a run.")
 
 	give = give or "table" -- table, stringList, number
 	mapNames = mapNames or false
@@ -957,7 +964,7 @@ end
 ]]
 
 function API.GetItemsOnFloor(give: string?, mapNames: boolean?)
-	API.Assert(inrun == true, ".GetItemsOnFloor: You can only use this function in a run.")
+	API.Assert(API.InRun == true, ".GetItemsOnFloor: You can only use this function in a run.")
 
 	give = give or "table" -- table, stringList, number
 	mapNames = mapNames or false
@@ -1004,7 +1011,7 @@ end
 ]]
 
 function API.GetMachineInfo(machine: Instance?, give: string?)
-	API.Assert(inrun == true, ".GetMachineInfo: You can only use this function in a run.")
+	API.Assert(API.InRun == true, ".GetMachineInfo: You can only use this function in a run.")
 	API.Assert(machine ~= nil and typeof(machine) == "Instance", ".GetMachineInfo: Invalid \"machine\" parameter. Make sure \"machine\" is an Instance.")
 
 	give = give or "table" -- type, completed, posessed, debuffed, inspired, table
@@ -1071,7 +1078,7 @@ print(info.type .. " machine | debuffed: " .. tostring(info.debuffed) .. " | ins
 ]]
 
 function API.CountTwistedObstacles()
-	API.Assert(inrun == true, ".CountTwistedObstacles: You can only use this function in a run.")
+	API.Assert(API.InRun == true, ".CountTwistedObstacles: You can only use this function in a run.")
 
 	local count = 0
 
@@ -1161,7 +1168,7 @@ end
 
 -- twisted handling
 function API.GetTwistedInfo(twisted: Instance?, give: string?)
-	API.Assert(inrun == true, ".GetTwistedInfo: You can only use this function in a run.")
+	API.Assert(API.InRun == true, ".GetTwistedInfo: You can only use this function in a run.")
 	API.Assert(twisted ~= nil and typeof(twisted) == "Instance", ".GetTwistedInfo: Invalid \"twisted\" parameter. Make sure \"twisted\" exists and is an Instance.")
 
 	give = give or "table" -- mappedName, wanderSpeed, chaseSpeed, rarity, chasing, hitboxRadius, detectionRadius, sightRadius, hearingRadius, research, awake, table
@@ -1214,7 +1221,7 @@ print(info.mappedName .. " (" .. info.rarity .. ") | sight radius: " .. info.sig
 ]]
 
 function API.GetTwistedsChasingPlayer(player: Instance?, give: string?, mapNames: boolean?)
-	API.Assert(inrun == true, ".GetTwistedsChasingPlayer: You can only use this function in a run.")
+	API.Assert(API.InRun == true, ".GetTwistedsChasingPlayer: You can only use this function in a run.")
 
 	player = player or plr
 	give = give or "table" -- table, stringList, number
@@ -1361,7 +1368,7 @@ local function monitorroom()
 	end)
 end
 
-if inrun then
+if API.InRun then
 	mainmaid:give(API.Get("room").ChildAdded:Connect(function()
 		API.Debug("print", ".GetPlayerLastHitBy: ChildAdded event fired for the current room. Resetting...")
 		monitorroom()
@@ -1371,7 +1378,7 @@ if inrun then
 end
 
 function API.GetPlayerLastHitBy(player: Instance?, mapName: boolean?)
-	API.Assert(inrun == true, ".GetPlayerLastHitBy: You can only use this function in a run.")
+	API.Assert(API.InRun == true, ".GetPlayerLastHitBy: You can only use this function in a run.")
 
 	player = player or plr
 	mapName = mapName or false
@@ -1397,7 +1404,7 @@ print(thisguy.Name .. " was last hit by " .. API.GetPlayerLastHitBy(thisguy)) �
 
 function API.GetTwistedRarity(twisted: Instance? | string?)
 	if twisted and typeof(twisted) == "Instance" then
-		API.Assert(inrun == true, ".GetTwistedRarity: The \"twisted\" parameter must be a string since the player isn't in a run. (E.g.: \"BoxtenMonster\"")
+		API.Assert(API.InRun == true, ".GetTwistedRarity: The \"twisted\" parameter must be a string since the player isn't in a run. (E.g.: \"BoxtenMonster\"")
 	end
 
 	API.Assert(twisted ~= nil and (typeof(twisted) == "Instance" or typeof(twisted) == "string"), ".GetTwistedRarity: Invalid \"twisted\" parameter. Make sure \"twisted\" exists and is an Instance or a string.")
@@ -1414,7 +1421,7 @@ print(API.GetTwistedRarity("SproutMonster")) → "Main"
 
 function API.GetTwistedResearchFromPlayer(twisted: Instance? | string?, player: Instance?)
 	if twisted and typeof(twisted) == "Instance" then
-		API.Assert(inrun == true, ".GetTwistedResearchFromPlayer: The \"twisted\" parameter must be a string since the player isn't in a run. (E.g.: \"BoxtenMonster\"")
+		API.Assert(API.InRun == true, ".GetTwistedResearchFromPlayer: The \"twisted\" parameter must be a string since the player isn't in a run. (E.g.: \"BoxtenMonster\"")
 	end
 
 	API.Assert(twisted ~= nil and (typeof(twisted) == "Instance" or typeof(twisted) == "string"), ".GetTwistedResearchFromPlayer: Invalid \"twisted\" parameter. Make sure \"twisted\" exists and is an Instance or a string.")
@@ -1496,7 +1503,7 @@ print("There are currently " .. API.GetTwistedsCount() .. " Twisteds that have a
 -------------------------------------------------------------------------------------------------------------------------------
 
 -- init
-if inrun then
+if API.InRun then
 	task.spawn(function()
 		API.UpdateGameRefs()
 
