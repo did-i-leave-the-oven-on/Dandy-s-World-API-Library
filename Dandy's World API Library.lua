@@ -57,13 +57,13 @@ local CC = {
 }
 
 rs.Heartbeat:Connect(function()
-	local devConsole = coregui:FindFirstChild("DevConsoleMaster")
-	if not devConsole then return end
+	local devconsole = coregui:FindFirstChild("DevConsoleMaster")
+	if not devconsole then return end
 
-	local devWindow = devConsole:FindFirstChild("DevConsoleWindow", true)
-	if devWindow and not devWindow.Visible then return end
+	local devwindow = devconsole:FindFirstChild("DevConsoleWindow", true)
+	if devwindow and not devwindow.Visible then return end
 
-	for _, v in pairs(devConsole:GetDescendants()) do
+	for _, v in pairs(devconsole:GetDescendants()) do
 		if v:IsA("TextLabel") then
 			v.RichText = true
 
@@ -71,12 +71,12 @@ rs.Heartbeat:Connect(function()
 				continue
 			end
 
-			for rawText, richText in pairs(CC.registry) do
-				if #v.Text >= #rawText and string.sub(v.Text, -#rawText) == rawText then
-					local prefix = string.sub(v.Text, 1, #v.Text - #rawText)
+			for raw, rich in pairs(CC.registry) do
+				if #v.Text >= #raw and string.sub(v.Text, -#raw) == raw then
+					local prefix = string.sub(v.Text, 1, #v.Text - #raw)
 
 					if prefix == "" or string.match(prefix, "^%d%d:%d%d:%d%d %-%- $") then
-						v.Text = prefix .. richText
+						v.Text = prefix .. rich
 						break
 					end
 				end
