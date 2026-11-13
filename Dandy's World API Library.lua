@@ -1369,7 +1369,7 @@ local function monitorroom()
 end
 
 if API.InRun then
-	mainmaid:give(API.Get("room").ChildAdded:Connect(function()
+	mainmaid:give(API.RoomFolder.ChildAdded:Connect(function()
 		API.Debug("print", ".GetPlayerLastHitBy: ChildAdded event fired for the current room. Resetting...")
 		monitorroom()
 	end), "roomadded")
