@@ -96,7 +96,7 @@ function CC.print(color, text, size)
 		local character = 'rgb(255, 87, 87)'
 		local rest = text:sub(#detect + 1)
 
-		richtext = '<font color="' .. character .. '">' .. detect .. '</font><font color="rgb(255, 255, 255)">' .. rest .. '</font>'
+		richtext = '<font color="' .. character .. '">' .. detect .. '</font><font color="rgb(' .. CC.cols[color] .. ')">' .. rest .. '</font>'
 	else
 		richtext = '<font color="rgb(' .. CC.cols[color] .. ')">' .. text .. '</font>'
 	end
@@ -123,11 +123,11 @@ end
 getgenv.DWAPIL_Warn = API.Warn
 
 function API.Error(message: string)
-	CC.print("err", "[Sprout]: " .. message, 2)
+	CC.print("err", "[Sprout]: " .. message)
 end
 
 function API.Success(message: string)
-	CC.print("succ", "[Sprout]: " .. message, 2)
+	CC.print("succ", "[Sprout]: " .. message)
 end
 
 function API.Assert(condition: any, message: string)
@@ -138,7 +138,7 @@ function API.Assert(condition: any, message: string)
 	return condition
 end
 
-function API.Debug(message: string, statementType: string)
+function API.Debug(statementType: string, message: string)
 	if not debugmode then return end
 	
 	if statementType == "print" then
@@ -1288,13 +1288,13 @@ local function recordhit(twisted)
 	local target = chasing and chasing.Value
 
 	if typeof(target) ~= "Instance" then 
-		API.Debug("warn", "recordhit: Target is not a valid instance for twisted: " .. twisted and twisted.Name)
+		API.Debug("warn", "recordhit: Target is not a valid instance for Twisted: " .. twisted and twisted.Name)
 		return 
 	end
 
 	if target:IsA("Player") then target = target.Character end
-	if not target then 
-		API.Debug("warn", "recordhit Target character could not be resolved for twisted: " .. twisted and twisted.Name)
+	if not target then
+		API.Debug("warn", "recordhit Target character could not be resolved for Twisted: " .. twisted and twisted.Name)
 		return 
 	end
 
@@ -1401,6 +1401,12 @@ print("You were last hit by " .. API.GetPlayerLastHitBy(game.Players.LocalPlayer
 local thisguy = plrs.ThisGuy
 print(thisguy.Name .. " was last hit by " .. API.GetPlayerLastHitBy(thisguy)) → "ThisGuy was last hit by CosmoMonster"
 ]]
+
+task.spawn(function()
+while wait(1) do
+print(API.GetPlayerLastHitBy(plr, true))
+end
+end)
 
 function API.GetTwistedRarity(twisted: Instance? | string?)
 	if twisted and typeof(twisted) == "Instance" then
