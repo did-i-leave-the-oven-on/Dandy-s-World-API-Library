@@ -1402,12 +1402,6 @@ local thisguy = plrs.ThisGuy
 print(thisguy.Name .. " was last hit by " .. API.GetPlayerLastHitBy(thisguy)) → "ThisGuy was last hit by CosmoMonster"
 ]]
 
-task.spawn(function()
-while wait(1) do
-print(API.GetPlayerLastHitBy(plr, true))
-end
-end)
-
 function API.GetTwistedRarity(twisted: Instance? | string?)
 	if twisted and typeof(twisted) == "Instance" then
 		API.Assert(API.InRun == true, ".GetTwistedRarity: The \"twisted\" parameter must be a string since the player isn't in a run. (E.g.: \"BoxtenMonster\"")
