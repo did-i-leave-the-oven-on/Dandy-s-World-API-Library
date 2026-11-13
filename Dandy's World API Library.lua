@@ -1278,28 +1278,38 @@ print(API.GetTwistedsChasingPlayer(thisguy, "stringList") .. " are chasing " .. 
 ]]
 
 local lasthits = setmetatable({}, { __mode = "k" })
+local lastchased = setmetatable({}, { __mode = "k" })
 local monitored = setmetatable({}, { __mode = "k" })
 
 local mainmaid = tisha.new()
 local sessionmaid = nil
 
+local currentfolder = nil
+local foldertimeout = 10
+
 local function recordhit(twisted)
+	local name = twisted and twisted.Name or "nil"
+
 	local chasing = twisted and twisted:FindFirstChild("ChasingValue")
 	local target = chasing and chasing.Value
 
-	if typeof(target) ~= "Instance" then 
-		API.Debug("warn", "recordhit: Target is not a valid instance for Twisted: " .. twisted and twisted.Name)
-		return 
+	if typeof(target) ~= "Instance" then
+		target = twisted and lastchased[twisted]
+	end
+
+	if typeof(target) ~= "Instance" then
+		API.Debug("warn", "recordhit: Target is not a valid instance for Twisted: " .. name)
+		return
 	end
 
 	if target:IsA("Player") then target = target.Character end
 	if not target then
-		API.Debug("warn", "recordhit Target character could not be resolved for Twisted: " .. twisted and twisted.Name)
-		return 
+		API.Debug("warn", "recordhit: Target character could not be resolved for Twisted: " .. name)
+		return
 	end
 
 	lasthits[target] = { twisted = twisted }
-	API.Debug("succ", "recordhit: Success! Twisted \"" .. twisted.Name .. "\" hit target character \"" .. target.Name .. "\"")
+	API.Debug("succ", "recordhit: Success! Twisted \"" .. name .. "\" hit target character \"" .. target.Name .. "\"")
 end
 
 local function monitortwisted(twisted)
@@ -1308,6 +1318,35 @@ local function monitortwisted(twisted)
 
 	local maid = tisha.new()
 	monitored[twisted] = maid
+
+	local function release()
+		if monitored[twisted] ~= maid then return end
+		monitored[twisted] = nil
+		lastchased[twisted] = nil
+		maid:destroy()
+	end
+
+	local function watchchasing(value)
+		if not value:IsA("ObjectValue") then return end
+
+		local function remember()
+			if typeof(value.Value) == "Instance" then
+				lastchased[twisted] = value.Value
+			end
+		end
+
+		remember()
+		maid:give(value:GetPropertyChangedSignal("Value"):Connect(remember))
+	end
+
+	local existing = twisted:FindFirstChild("ChasingValue")
+	if existing then watchchasing(existing) end
+
+	maid:give(twisted.ChildAdded:Connect(function(child)
+		if child.Name == "ChasingValue" then
+			watchchasing(child)
+		end
+	end))
 
 	maid:give(twisted:GetAttributeChangedSignal("Attacking"):Connect(function()
 		local attacking = twisted:GetAttribute("Attacking")
@@ -1319,8 +1358,7 @@ local function monitortwisted(twisted)
 
 	maid:give(twisted.Destroying:Connect(function()
 		API.Debug("warn", "monitortwisted: Twisted model \"" .. twisted.Name .. "\" destroyed / removed.")
-		monitored[twisted] = nil
-		maid:destroy()
+		release()
 	end))
 
 	if twisted:GetAttribute("Attacking") == true then
@@ -1329,7 +1367,7 @@ local function monitortwisted(twisted)
 	end
 end
 
-local function monitorroom()
+local function monitorroom(room)
 	API.Debug("print", "monitorroom: Called / restarted.")
 
 	if sessionmaid then
@@ -1340,16 +1378,38 @@ local function monitorroom()
 	local maid = tisha.new()
 	sessionmaid = maid
 
+	local previousfolder = currentfolder
+
 	maid:spawn(function()
-		API.Debug("print", "monitorroom: Waiting for Twisteds folder...")
+		API.Debug("print", "monitorroom: Waiting for the new room's Twisteds folder...")
 
-		local folder = API.Get("twisteds")
+		local startedat = os.clock()
+		local folder
 
-		while not folder do
-			task.wait(0.1)
+		while task.wait(0.1) do
+			if room and not room.Parent then
+				API.Debug("warn", "monitorroom: Room was removed before its Twisteds folder appeared.")
+				return
+			end
+
 			folder = API.Get("twisteds")
+
+			if typeof(folder) == "Instance" and folder:IsDescendantOf(game) then
+				if room and folder:IsDescendantOf(room) then break end
+				if folder ~= previousfolder then break end
+				if os.clock() - startedat > foldertimeout then break end
+			end
 		end
+
+		currentfolder = folder
 		API.Debug("succ", "monitorroom: Twisteds folder found!")
+
+		maid:give(folder.AncestryChanged:Connect(function()
+			if not folder:IsDescendantOf(game) then
+				API.Debug("warn", "monitorroom: Twisteds folder was destroyed. Restarting...")
+				monitorroom()
+			end
+		end))
 
 		API.Debug("print", "monitorroom: Waiting for floor...")
 		repeat task.wait(0.1) until API.GetGameInfo("floorActive") == true
@@ -1369,9 +1429,9 @@ local function monitorroom()
 end
 
 if API.InRun then
-	mainmaid:give(API.RoomFolder.ChildAdded:Connect(function()
+	mainmaid:give(API.RoomFolder.ChildAdded:Connect(function(room)
 		API.Debug("print", ".GetPlayerLastHitBy: ChildAdded event fired for the current room. Resetting...")
-		monitorroom()
+		monitorroom(room)
 	end), "roomadded")
 
 	monitorroom()
