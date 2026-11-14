@@ -44,6 +44,7 @@ local placeid = game.PlaceId
 
 -- debug
 local debugmode = loadArgs.debugMode or false
+local coloredconsole = loadArgs.coloredConsole or true
 
 local CC = {
 	cols = {
@@ -56,34 +57,36 @@ local CC = {
 	registry = {}
 }
 
-rs.Heartbeat:Connect(function()
-	local devconsole = coregui:FindFirstChild("DevConsoleMaster")
-	if not devconsole then return end
+if coloredconsole then
+	rs.Heartbeat:Connect(function()
+		local devconsole = coregui:FindFirstChild("DevConsoleMaster")
+		if not devconsole then return end
 
-	local devwindow = devconsole:FindFirstChild("DevConsoleWindow", true)
-	if devwindow and not devwindow.Visible then return end
+		local devwindow = devconsole:FindFirstChild("DevConsoleWindow", true)
+		if devwindow and not devwindow.Visible then return end
 
-	for _, v in pairs(devconsole:GetDescendants()) do
-		if v:IsA("TextLabel") then
-			v.RichText = true
+		for _, v in pairs(devconsole:GetDescendants()) do
+			if v:IsA("TextLabel") then
+				v.RichText = true
 
-			if string.find(v.Text, "<font", 1, true) then
-				continue
-			end
+				if string.find(v.Text, "<font", 1, true) then
+					continue
+				end
 
-			for raw, rich in pairs(CC.registry) do
-				if #v.Text >= #raw and string.sub(v.Text, -#raw) == raw then
-					local prefix = string.sub(v.Text, 1, #v.Text - #raw)
+				for raw, rich in pairs(CC.registry) do
+					if #v.Text >= #raw and string.sub(v.Text, -#raw) == raw then
+						local prefix = string.sub(v.Text, 1, #v.Text - #raw)
 
-					if prefix == "" or string.match(prefix, "^%d%d:%d%d:%d%d %-%- $") then
-						v.Text = prefix .. rich
-						break
+						if prefix == "" or string.match(prefix, "^%d%d:%d%d:%d%d %-%- $") then
+							v.Text = prefix .. rich
+							break
+						end
 					end
 				end
 			end
 		end
-	end
-end)
+	end)
+end
 
 function CC.print(color, text, size)
 	if not CC.cols[color] then return end
