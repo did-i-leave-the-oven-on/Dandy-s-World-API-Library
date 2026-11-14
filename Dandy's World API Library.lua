@@ -772,7 +772,7 @@ end
 function API.TrinketActiveFor(trinket: string?, player: Instance?)
 	API.Assert(API.InRun == true, ".TrinketActiveFor: You can only use this function in a run.")
 
-	trinket = trinket or "VeeRemote" -- VeeRemote, Wrench, StarPillow, SavoryCharm, ClownHorn, RibbonSpool, DuckToy, VanityMirror, CardboardArmor
+	trinket = trinket or "VeeRemote" -- Alarm, CardboardArmor, ClownHorn, MemoryLocket, PullToy, RibbonSpool, SavoryCharm, VanityMirror, VeeRemote, Wrench
 	player = player or plr
 
 	API.Assert(trinket ~= nil and typeof(trinket) == "string", ".TrinketActiveFor: Invalid \"trinket\" parameter. Make sure \"trinket\" is a string.")
