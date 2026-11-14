@@ -322,8 +322,6 @@ print(API.SpaceCamelCased("None")) → "None"
 function API.MapName(name: string?)
 	API.Assert(name ~= nil and typeof(name) == "string", ".MapName: Invalid \"name\" parameter. Make sure \"name\" exists and is a string.")
 
-	local mapped
-
 	if name:find("Monster") then
 		name = string.gsub(name, "Monster", "")
 		if name == "RazzleDazzle" then
@@ -331,18 +329,16 @@ function API.MapName(name: string?)
 		elseif name == "Blott" then
 			name = "Blot"
 		end
-		mapped = "Twisted " .. name
+		return "Twisted " .. name
 	end
 
 	if name == "RazzleDazzle" then
-		mapped = "Razzle & Dazzle"
+		return "Razzle & Dazzle"
 	elseif name == "Blott" then
-		mapped = "Blot"
+		return "Blot"
 	end
 
-	mapped = API.ItemNameMaps[name] or API.InvertedItemNameMaps[name] or name
-
-	return mapped
+	return API.ItemNameMaps[name] or API.InvertedItemNameMaps[name] or name
 end --[[
 example usage:
 
