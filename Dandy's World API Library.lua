@@ -1539,7 +1539,9 @@ function API.GetTwistedOfTheDay()
 	local twistedoftheday = bywiki("TOTDName")
 
 	if twistedoftheday then
-		return twistedoftheday:match("^%s*(.-)%s*$")
+		twistedoftheday = twistedoftheday:gsub("<noinclude>.-</noinclude>", "")
+		twistedoftheday = twistedoftheday:gsub("%[%[Category:.-%]%]", "")
+		return "Twisted" .. twistedoftheday:match("^%s*(.-)%s*$")
 	end
 end --[[
 example usage:
