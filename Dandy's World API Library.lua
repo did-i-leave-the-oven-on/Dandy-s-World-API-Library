@@ -143,7 +143,7 @@ end
 
 function API.Debug(statementType: string, message: string)
 	if not debugmode then return end
-	
+
 	if statementType == "print" then
 		API.Print(message)
 	elseif statementType == "warn" then
@@ -563,7 +563,7 @@ function API.GetPlayerInfo(player: Instance?, give: string?, mapNames: boolean?)
 		trinketSlot1 = API.FetchPlayerTrinketSlot and API.FetchPlayerTrinketSlot(player, 1) or nil,
 		trinketSlot2 = API.FetchPlayerTrinketSlot and API.FetchPlayerTrinketSlot(player, 2) or nil,
 		abilityactive = abilityactive,
-		dead = API.PlayersFolder and API.PlayersFolder:FindFirstChild(player.Name) or nil,
+		dead = API.Get("players"):FindFirstChild(player.Name) or nil,
 	}
 
 	if give == "table" then
@@ -582,6 +582,18 @@ local info = API.GetPlayerInfo(thisguy)
 print(thisguy.Name .. " is playing as " .. info.toon .. " and currently has " .. info.tapes .. " tapes") → "ThisGuy is playing as Shelly and currently has 12 tapes"
 
 print(API.GetPlayerInfo(thisguy, "dead") and "dead" or "alive") → "alive"
+]]
+
+function API.Exists(player: Instance?)
+	player = player or plr
+	
+	API.Assert(player ~= nil and player:IsA("Player"), ".Exists: Invalid \"player\" parameter. Make sure \"player\" is a Player.")
+	
+	return API.Get("players"):FindFirstChild(player.Name)
+end --[[
+example usage:
+
+print(API.Exists(plrs.ThisGuy) and "exists" or "doesn't exist yet") → "ThisGuy exists"
 ]]
 
 function API.GetPlayersAlive(give: string?, toonify: boolean?)
@@ -1181,7 +1193,7 @@ function API.GetTwistedInfo(twisted: Instance?, give: string?)
 	local chaser = not cannotchase and twisted:FindFirstChild("Chaser")
 
 	local chasingvalue = not cannotchase and twisted:FindFirstChild("ChasingValue")
-	
+
 	local awake = false
 	if name == "RodgerMonster" or name == "RazzleDazzleMonster" then
 		awake = twisted:GetAttribute("Awake") == true
