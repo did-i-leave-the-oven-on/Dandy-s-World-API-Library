@@ -587,9 +587,9 @@ print(API.GetPlayerInfo(thisguy, "dead") and "dead" or "alive") → "alive"
 
 function API.Exists(player: Instance?)
 	player = player or plr
-	
+
 	API.Assert(player ~= nil and player:IsA("Player"), ".Exists: Invalid \"player\" parameter. Make sure \"player\" is a Player.")
-	
+
 	return API.Get("players"):FindFirstChild(player.Name)
 end --[[
 example usage:
@@ -1291,6 +1291,7 @@ print(API.GetTwistedsChasingPlayer(thisguy, "stringList") .. " are chasing " .. 
 
 local lasthits = setmetatable({}, { __mode = "k" })
 local lastchased = setmetatable({}, { __mode = "k" })
+local lasthazard = setmetatable({}, { __mode = "k" })
 local monitored = setmetatable({}, { __mode = "k" })
 
 local mainmaid = tisha.new()
@@ -1298,6 +1299,44 @@ local sessionmaid = nil
 
 local currentfolder = nil
 local foldertimeout = 10
+
+local function getplayerattacker(character)
+	local root = character:FindFirstChild("HumanoidRootPart")
+	if not root then return nil end
+	local origin = root.Position
+
+	local function tracking(obj, handroot, range)
+		if not handroot then return false end
+		local trackedChar = obj:FindFirstChild("TrackedCharacter")
+		return (handroot.Position - origin).Magnitude <= range
+			and obj:GetAttribute("IsTracking")
+			and trackedChar and trackedChar.Value == character
+	end
+
+	local freearea = API.Get("freearea")
+	if freearea then
+		for _, obj in ipairs(freearea:GetChildren()) do
+			if obj.Name:find("Tendril") and tracking(obj, obj:FindFirstChild("HumanoidRootPart"), 18) then
+				return "Twisted Sprout's tendril", obj
+			end
+		end
+	end
+
+	local room = API.Get("room")
+	if room then
+		for _, obj in ipairs(room:GetChildren()) do
+			if obj.Name:find("BlotHand") then
+				local model = obj:FindFirstChildWhichIsA("Model")
+				local handroot = model and (model:FindFirstChild("HumanoidRootPart") or model:FindFirstChild("RootPart"))
+				if tracking(obj, handroot, 18) then
+					return "Twisted Blot's hand", obj
+				end
+			end
+		end
+	end
+
+	return nil
+end
 
 local function recordhit(twisted)
 	local name = twisted and twisted.Name or "nil"
@@ -1320,7 +1359,7 @@ local function recordhit(twisted)
 		return
 	end
 
-	lasthits[target] = { twisted = twisted }
+	lasthits[target] = { twisted = twisted, time = os.clock() }
 	API.Debug("succ", "recordhit: Success! Twisted \"" .. name .. "\" hit target character \"" .. target.Name .. "\"")
 end
 
@@ -1440,13 +1479,49 @@ local function monitorroom(room)
 	end)
 end
 
-if API.InRun then
-	mainmaid:give(API.RoomFolder.ChildAdded:Connect(function(room)
-		API.Debug("print", ".GetPlayerLastHitBy: ChildAdded event fired for the current room. Resetting...")
-		monitorroom(room)
-	end), "roomadded")
+local function monitorcharacter(character)
+	local hum = character:WaitForChild("Humanoid", 10)
+	if not hum then return end
 
-	monitorroom()
+	local maid = tisha.new()
+	local lasthealth = hum.Health
+
+	maid:spawn(function()
+		while task.wait(0.1) do
+			if not character.Parent then break end
+			local label, obj = getplayerattacker(character)
+			if label then
+				lasthazard[character] = { label = label, obj = obj, time = os.clock() }
+			end
+		end
+	end)
+
+	maid:give(hum.HealthChanged:Connect(function(health)
+		local dropped = health < lasthealth
+		lasthealth = health
+		if not dropped then return end
+
+		local seen = lasthazard[character]
+		if seen and os.clock() - seen.time <= 1 then
+			local existing = lasthits[character]
+			if not (existing and existing.time and os.clock() - existing.time < 0.5) then
+				lasthits[character] = { hazard = seen.label, time = os.clock() }
+				API.Debug("succ", "Hazard hit: " .. seen.label .. " hit \"" .. character.Name .. "\"")
+			end
+		end
+	end))
+
+	maid:give(character.Destroying:Connect(function() maid:destroy() end))
+end
+
+if API.InRun then
+	for _, p in ipairs(plrs:GetPlayers()) do
+		if p.Character then task.spawn(monitorcharacter, p.Character) end
+		mainmaid:give(p.CharacterAdded:Connect(monitorcharacter))
+	end
+	mainmaid:give(plrs.PlayerAdded:Connect(function(p)
+		mainmaid:give(p.CharacterAdded:Connect(monitorcharacter))
+	end))
 end
 
 function API.GetPlayerLastHitBy(player: Instance?, mapName: boolean?)
@@ -1460,10 +1535,13 @@ function API.GetPlayerLastHitBy(player: Instance?, mapName: boolean?)
 
 	local character = player.Character
 	local record = character and lasthits[character]
-	if not record or not record.twisted.Parent then
-		return nil
+	if not record then return nil end
+
+	if record.hazard then
+		return record.hazard
 	end
 
+	if not record.twisted.Parent then return nil end
 	return mapName and API.MapName(record.twisted.Name) or record.twisted
 end --[[
 example usage:
