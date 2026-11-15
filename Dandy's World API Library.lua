@@ -353,7 +353,7 @@ print(API.MapName("BlottMonster")) → "Twisted Blot"
 function API.GetGameInfo(give: string?)
 	API.Assert(API.InRun == true, ".GetGameInfo: You can only use this function in a run.")
 
-	give = give or "table" -- gameStarted, cardVoting, dandyStoreOpen, floor, floorActive, panicMode, machinesCompleted, machinesRequired, machinesLeft, blackout, playersAlive, boughtNothingForThisManyFloors, gameMessage, table
+	give = give or "table" -- gameStarted, cardVoting, dandyStoreOpen, floor, floorActive, panicMode, panicTimer, machinesCompleted, machinesRequired, machinesLeft, blackout, playersAlive, boughtNothingForThisManyFloors, gameMessage, table
 
 	API.Assert(give ~= nil and typeof(give) == "string", ".GetGameInfo: Invalid \"give\" parameter. Make sure \"give\" is a string.")
 
@@ -365,6 +365,7 @@ function API.GetGameInfo(give: string?)
 		floor = (gameinfofolder and gameinfofolder:FindFirstChild("Floor")) and gameinfofolder.Floor.Value or 0,
 		floorActive = (gameinfofolder and gameinfofolder:FindFirstChild("FloorActive")) and gameinfofolder.FloorActive.Value or false,
 		panicMode = (gameinfofolder and gameinfofolder:FindFirstChild("Panic")) and gameinfofolder.Panic.Value or false,
+		panicTimer = (gameinfofolder and gameinfofolder:FindFirstChild("PanicTimer")) and gameinfofolder.PanicTimer.Value or false,
 		machinesCompleted = (gameinfofolder and gameinfofolder:FindFirstChild("GeneratorsCompleted")) and gameinfofolder.GeneratorsCompleted.Value or 0,
 		machinesRequired = (gameinfofolder and gameinfofolder:FindFirstChild("RequiredGenerators")) and gameinfofolder.RequiredGenerators.Value or 0,
 		machinesLeft = ((gameinfofolder and gameinfofolder:FindFirstChild("RequiredGenerators")) and gameinfofolder.RequiredGenerators.Value or 0) - ((gameinfofolder and gameinfofolder:FindFirstChild("GeneratorsCompleted")) and gameinfofolder.GeneratorsCompleted.Value or 0),
