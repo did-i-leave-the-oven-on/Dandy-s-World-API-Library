@@ -1026,7 +1026,7 @@ function API.GetMachineInfo(machine: Instance?, give: string?)
 	API.Assert(API.InRun == true, ".GetMachineInfo: You can only use this function in a run.")
 	API.Assert(machine ~= nil and typeof(machine) == "Instance", ".GetMachineInfo: Invalid \"machine\" parameter. Make sure \"machine\" is an Instance.")
 
-	give = give or "table" -- type, completed, posessed, debuffed, inspired, table
+	give = give or "table" -- type, completed, posessed, debuffed, inspired, slot1, slot2, table
 
 	API.Assert(give ~= nil and typeof(give) == "string", ".GetMachineInfo: Invalid \"give\" parameter. Make sure \"give\" is a string.")
 
@@ -1069,6 +1069,8 @@ function API.GetMachineInfo(machine: Instance?, give: string?)
 		posessed = machinestats and machinestats:FindFirstChild("Connie") and machinestats.Connie.Value or false,
 		debuffed = machine:GetAttribute("BrushaDebuffed") or false,
 		inspired = machine:GetAttribute("Inspired") or false,
+		slot1 = machinestats:FindFirstChild("ActivePlayer").Value,
+		slot2 = machtype2 and machinestats:FindFirstChild("ActivePlayer").Value or nil
 	}
 
 	if give == "table" then
