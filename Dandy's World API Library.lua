@@ -209,7 +209,7 @@ function API.UpdateGameRefs()
 	local room = API.Get("room")
 
 	if room then
-		API.TwistedsFolder = room:WaitForChild("Monsters", 5) or nil
+		API.TwistedsFolder = not API.IsBreakRoom() and (room:WaitForChild("Monsters", 5) or nil) or nil
 		API.ItemsFolder = room:WaitForChild("Items", 5) or nil
 		API.MachinesFolder = room:WaitForChild("Generators", 5) or nil
 		API.FreeAreaFolder = room:WaitForChild("FreeArea", 5) or nil
