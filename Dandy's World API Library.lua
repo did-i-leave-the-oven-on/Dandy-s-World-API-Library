@@ -213,11 +213,20 @@ function API.UpdateGameRefs()
 		API.ItemsFolder = room:WaitForChild("Items", 5) or nil
 		API.MachinesFolder = room:WaitForChild("Generators", 5) or nil
 		API.FreeAreaFolder = room:WaitForChild("FreeArea", 5) or nil
-		API.StarPillowsFolder = room:WaitForChild("StarPillows", 5) or nil
 
 		if API.FreeAreaFolder then
 			API.FakeElevator = API.FreeAreaFolder:WaitForChild("FakeElevator", 5) or nil
 		end
+
+		task.spawn(function()
+			while API.InRun and API.Get("room") == room do
+				API.StarPillowsFolder = room:FindFirstChild("StarPillows")
+				if API.StarPillowsFolder then 
+					break 
+				end
+				task.wait(0.5)
+			end
+		end)
 	end
 end
 
