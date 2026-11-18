@@ -861,15 +861,16 @@ function API.NearTwisted(player: Instance?, studs: number?, raycastCheck: boolea
 	API.Assert(studs ~= nil and typeof(studs) == "number", ".NearTwisted: Invalid \"studs\" parameter. Make sure \"studs\" exists and is a number.")
 
 	player = player or plr
+	studs = studs or 20
 	raycastCheck = raycastCheck or false
 
 	API.Assert(player ~= nil and player:IsA("Player"), ".NearTwisted: Invalid \"player\" parameter. Make sure \"player\" is a Player.")
 	API.Assert(raycastCheck ~= nil and typeof(raycastCheck) == "boolean", ".NearTwisted: Invalid \"raycastCheck\" parameter. Make sure \"raycastCheck\" is a boolean.")
 
-	local playerChar = player.Character
-	local playerRoot = playerChar and playerChar:FindFirstChild("HumanoidRootPart")
+	local theirchar = player.Character
+	local theirroot = theirchar and theirchar:FindFirstChild("HumanoidRootPart")
 
-	if not API.TwistedsFolder or not playerRoot then 
+	if not API.TwistedsFolder or not theirroot then 
 		return false 
 	end
 
@@ -895,15 +896,15 @@ function API.NearTwisted(player: Instance?, studs: number?, raycastCheck: boolea
 			end
 
 			if twistedpos then
-				local distance = (twistedpos - playerRoot.Position).Magnitude
+				local distance = (twistedpos - theirroot.Position).Magnitude
 				if distance <= studs then
 					if raycastCheck then
-						local origin = playerRoot.Position
+						local origin = theirroot.Position
 						local direction = twistedpos - origin
 
 						local params = RaycastParams.new()
 						params.FilterType = Enum.RaycastFilterType.Exclude
-						params.FilterDescendantsInstances = {playerChar, obj}
+						params.FilterDescendantsInstances = {theirchar, obj}
 						params.IgnoreWater = true
 
 						local result = ws:Raycast(origin, direction, params)
