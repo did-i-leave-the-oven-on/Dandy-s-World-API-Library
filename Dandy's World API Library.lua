@@ -1040,12 +1040,33 @@ function API.GetMachineInfo(machine: Instance?, give: string?)
 	give = give or "table" -- type, completed, posessed, debuffed, inspired, slot1, slot2, table
 
 	API.Assert(give ~= nil and typeof(give) == "string", ".GetMachineInfo: Invalid \"give\" parameter. Make sure \"give\" is a string.")
+	
+	local dualmachine = machine:GetAttribute("Prompt2MinigameType") or nil
+	
+	local position, position2
+	
+	if machine:FindFirstChild("TeleportPositions") then
+		if machine:FindFirstChild("TeleportPositions"):FindFirstChild("TeleportPosition") then
+			position = machine:FindFirstChild("TeleportPositions"):FindFirstChild("TeleportPosition").CFrame * CFrame.new(0, 2.3, 0)
+
+			if dualmachine and machine:FindFirstChild("TeleportPositions_Mirror") then
+				position2 = machine.TeleportPositions_Mirror:FindFirstChild("TeleportPosition").CFrame * CFrame.new(0, 2.3, 0)
+			end
+		else
+			position = CFrame.new(0, 0, 0)
+			position2 = CFrame.new(0, 0, 0)
+		end
+	else
+		position = CFrame.new(0, 0, 0)
+		position2 = CFrame.new(0, 0, 0)
+	end
 
 	local machinestats = machine:FindFirstChild("Stats") or nil
 
 	local machtype = machine:GetAttribute("MinigameType")
 	if machtype == "MovementTreadmill" then 
 		machtype = "Treadmill"
+		position = machine:FindFirstChild("TeleportPositions"):FindFirstChild("TreadmillTeleportPosition").CFrame * CFrame.new(0, 2.3, 0)
 	elseif machtype == "Circle" then 
 		machtype = "Circle"
 	elseif machtype == "Barnaby" then 
@@ -1054,10 +1075,13 @@ function API.GetMachineInfo(machine: Instance?, give: string?)
 		machtype = "Normal"
 	end
 
-	local machtype2 = machine:GetAttribute("Prompt2MinigameType") or nil
+	local machtype2 = dualmachine
 	if machtype2 then
 		if machtype2 == "MovementTreadmill" then 
 			machtype2 = "Treadmill"
+			if machine:FindFirstChild("TeleportPositions_Mirror") then
+				position2 = machine.TeleportPositions_Mirror:FindFirstChild("TreadmillTeleportPosition").CFrame * CFrame.new(0, 2.3, 0)
+			end
 		elseif machtype2 == "Circle" then 
 			machtype2 = "Circle"
 		elseif machtype2 == "Barnaby" then 
