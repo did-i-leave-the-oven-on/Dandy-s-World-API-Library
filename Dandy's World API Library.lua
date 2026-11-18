@@ -563,6 +563,7 @@ function API.GetPlayerInfo(player: Instance?, give: string?, mapNames: boolean?)
 		toon = toon,
 		health = plrhum and plrhum.Health or 0,
 		tapes = (plrgamestats and plrgamestats:FindFirstChild("SurvivalPoints")) and plrgamestats.SurvivalPoints.Value or 0,
+		extracting = plrchar and plrchar:FindFirstChild("Decoding") and plrchar.Decoding.Value or nil,
 		walkSpeed = walkspeedbase * walkspeedmodifier,
 		runSpeed = runspeedbase * runspeedmodifier,
 		icon = (plrconfig and plrconfig:FindFirstChild("Icon")) and plrconfig.Icon.Texture or "rbxassetid://0",
