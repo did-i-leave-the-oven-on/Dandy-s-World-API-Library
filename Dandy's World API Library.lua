@@ -524,7 +524,7 @@ function API.GetPlayerInfo(player: Instance?, give: string?, mapNames: boolean?)
 	API.Assert(API.InRun == true, ".GetPlayerInfo: You can only use this function in a run.")
 
 	player = player or plr
-	give = give or "table" -- toon, health, tapes, walkSpeed, runSpeed, icon, inventorySlot1, inventorySlot2, inventorySlot3, inventorySlot4, trinketSlot1, trinketSlot2, abilityActive, dead, table
+	give = give or "table" -- toon, health, tapes, extracting, walkSpeed, runSpeed, icon, inventorySlot1, inventorySlot2, inventorySlot3, inventorySlot4, trinketSlot1, trinketSlot2, abilityActive, dead, table
 	mapNames = mapNames or false
 
 	API.Assert(player ~= nil and player:IsA("Player"), ".GetPlayerInfo: Invalid \"player\" parameter. Make sure \"player\" is a Player.")
