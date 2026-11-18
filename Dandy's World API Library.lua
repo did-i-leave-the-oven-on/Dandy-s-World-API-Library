@@ -1195,7 +1195,7 @@ function API.GetTwistedInfo(twisted: Instance?, give: string?)
 	API.Assert(API.InRun == true, ".GetTwistedInfo: You can only use this function in a run.")
 	API.Assert(twisted ~= nil and typeof(twisted) == "Instance", ".GetTwistedInfo: Invalid \"twisted\" parameter. Make sure \"twisted\" exists and is an Instance.")
 
-	give = give or "table" -- mappedName, wanderSpeed, chaseSpeed, rarity, chasing, hitboxRadius, detectionRadius, sightRadius, hearingRadius, research, awake, table
+	give = give or "table" -- mappedName, wanderSpeed, chaseSpeed, alerted, rarity, chasing, hitboxRadius, detectionRadius, sightRadius, hearingRadius, research, awake, table
 
 	API.Assert(give ~= nil and typeof(give) == "string", ".GetTwistedInfo: Invalid \"give\" parameter. Make sure \"give\" is a string.")
 
@@ -1216,6 +1216,7 @@ function API.GetTwistedInfo(twisted: Instance?, give: string?)
 		mappedName = API.MapName(name),
 		wanderSpeed = statsfolder:FindFirstChild("WalkSpeed").Value or 0,
 		chaseSpeed = statsfolder:FindFirstChild("ChaseSpeed").Value or 0,
+		alerted = twisted:GetAttribute("Alerted") or false,
 		rarity = API.GetTwistedRarity(twisted),
 		chasing = chasingvalue and chasingvalue.Value or false,
 		hitboxRadius = (chaser and chaser:FindFirstChild("KillRadius")) and chaser.KillRadius.Value or 0,
