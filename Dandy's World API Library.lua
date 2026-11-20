@@ -415,7 +415,7 @@ print("Panic mode is " .. panicking) → "Panic mode is off"
 function API.IsBreakRoom()
 	API.Assert(API.InRun == true, ".IsBreakRoom: You can only use this function in a run.")
 
-	return string.lower(plrgui.ScreenGui.Menu.TopBar.FloorNumber.Text):find("break")
+	return false -- string.lower(plrgui.ScreenGui.Menu.TopBar.FloorNumber.Text):find("break")
 end --[[
 example usage:
 
@@ -1702,7 +1702,7 @@ if API.InRun then
 		API.RoomFolder.ChildAdded:Connect(API.UpdateGameRefs)
 		API.RoomFolder.ChildRemoved:Connect(API.UpdateGameRefs)
 
-		plrgui:WaitForChild("ScreenGui"):WaitForChild("Menu"):WaitForChild("TopBar"):WaitForChild("FloorNumber"):GetPropertyChangedSignal("Text"):Connect(API.UpdateGameRefs)
+		plrgui:WaitForChild("HUD"):WaitForChild("Topbar"):WaitForChild("FloorStatus"):WaitForChild("FloorNumber"):GetPropertyChangedSignal("Text"):Connect(API.UpdateGameRefs)
 	end)
 end
 
