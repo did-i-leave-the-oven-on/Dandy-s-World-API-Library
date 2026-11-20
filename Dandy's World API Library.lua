@@ -1660,7 +1660,7 @@ function API.GetTwistedOfTheDay()
 	if twistedoftheday then
 		twistedoftheday = twistedoftheday:gsub("<noinclude>.-</noinclude>", "")
 		twistedoftheday = twistedoftheday:gsub("%[%[Category:.-%]%]", "")
-		return "Twisted" .. twistedoftheday:match("^%s*(.-)%s*$")
+		return "Twisted " .. twistedoftheday:match("^%s*(.-)%s*$")
 	end
 end --[[
 example usage:
