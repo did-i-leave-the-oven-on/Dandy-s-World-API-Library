@@ -358,10 +358,10 @@ function API.MapName(name: string?)
 	elseif name == "Blott" then
 		return "Blot"
 	end
-	
-	if not name:find(" ") and rst:FindFirstChild("ItemModules") then
+
+	if rst:FindFirstChild("ItemModules") and rst.ItemModules:FindFirstChild(name) then
 		local module = rst.ItemModules[name]
-		
+
 		if module then
 			local t = require(rst.ItemModules[name])
 			if t and t.Name then
