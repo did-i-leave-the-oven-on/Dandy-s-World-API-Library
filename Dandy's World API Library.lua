@@ -181,10 +181,12 @@ end
 -- game variables
 API.LobbyPlaceID = 16116270224
 API.RunPlaceID = 16552821455
+API.LabPlaceID = 5569032992
 API.RoleplayServerID = 18984416148
 
 API.InLobby = placeid == API.LobbyPlaceID
 API.InRun = placeid == API.RunPlaceID
+API.InLab = placeid == API.LabPlaceID
 API.InRoleplayServer = placeid == API.RoleplayServerID
 
 API.PlayersFolder = API.InRun and ws:WaitForChild("InGamePlayers") or ws:WaitForChild("Players") or nil
