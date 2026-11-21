@@ -1063,7 +1063,7 @@ function API.GetMachineInfo(machine: Instance?, give: string?)
 	API.Assert(API.InRun == true, ".GetMachineInfo: You can only use this function in a run.")
 	API.Assert(machine ~= nil and typeof(machine) == "Instance", ".GetMachineInfo: Invalid \"machine\" parameter. Make sure \"machine\" is an Instance.")
 
-	give = give or "table"
+	give = give or "table" -- type, position, position2, completed, posessed, debuffed, inspired, slot1, slot2, slot3, slot4, table
 	API.Assert(typeof(give) == "string", ".GetMachineInfo: Invalid \"give\" parameter. Make sure \"give\" is a string.")
 
 	local fallbackCF = CFrame.new(0, 0, 0)
@@ -1102,6 +1102,9 @@ function API.GetMachineInfo(machine: Instance?, give: string?)
 
 	local machinestats = machine:FindFirstChild("Stats")
 	local active = getvalue(machinestats, "ActivePlayer", nil)
+	local active2 = getvalue(machinestats, "ActivePlayer2", nil)
+	local active3 = getvalue(machinestats, "ActivePlayer3", nil)
+	local active4 = getvalue(machinestats, "ActivePlayer4", nil)
 
 	local data = {
 		type = resolvedtype,
@@ -1112,7 +1115,9 @@ function API.GetMachineInfo(machine: Instance?, give: string?)
 		debuffed = machine:GetAttribute("BrushaDebuffed") or false,
 		inspired = machine:GetAttribute("Inspired") or false,
 		slot1 = active,
-		slot2 = dualmachine and active or nil,
+		slot2 = active2,
+		slot3 = active3,
+		slot4 = active4,
 	}
 
 	return give == "table" and data or data[give]
