@@ -1033,88 +1033,85 @@ for _, item in ipairs(API.GetItemsOnFloor()) do
 end
 ]]
 
+local function mapmachinetype(rawType)
+	if type == "MovementTreadmill" then
+		return "Treadmill"
+	elseif type == "Circle" then
+		return "Circle"
+	elseif type == "Barnaby" then
+		return "Arcade"
+	else
+		return "Normal"
+	end
+end
+
+local function getoffset(parent, child)
+	local child = parent and parent:FindFirstChild(child)
+	return child and child:IsA("BasePart") and (child.CFrame * CFrame.new(0, 2.3, 0)) or nil
+end
+
+local function getvalue(folder, child, fallback)
+	local obj = folder and folder:FindFirstChild(child)
+	return (obj and obj.Value ~= nil) and obj.Value or fallback
+end
+
 function API.GetMachineInfo(machine: Instance?, give: string?)
 	API.Assert(API.InRun == true, ".GetMachineInfo: You can only use this function in a run.")
 	API.Assert(machine ~= nil and typeof(machine) == "Instance", ".GetMachineInfo: Invalid \"machine\" parameter. Make sure \"machine\" is an Instance.")
 
-	give = give or "table" -- type, position, position2, completed, posessed, debuffed, inspired, slot1, slot2, table
+	give = give or "table"
+	API.Assert(typeof(give) == "string", ".GetMachineInfo: Invalid \"give\" parameter. Make sure \"give\" is a string.")
 
-	API.Assert(give ~= nil and typeof(give) == "string", ".GetMachineInfo: Invalid \"give\" parameter. Make sure \"give\" is a string.")
-	
-	local dualmachine = machine:GetAttribute("Prompt2MinigameType") or nil
-	
-	local position, position2
-	
-	if machine:FindFirstChild("TeleportPositions") then
-		if machine:FindFirstChild("TeleportPositions"):FindFirstChild("TeleportPosition") then
-			position = machine:FindFirstChild("TeleportPositions"):FindFirstChild("TeleportPosition").CFrame * CFrame.new(0, 2.3, 0)
+	local fallbackCF = CFrame.new(0, 0, 0)
+	local tpFolder = machine:FindFirstChild("TeleportPositions")
+	local position = getoffset(tpFolder, "TeleportPosition") or fallbackCF
+	local position2 = fallbackCF
 
-			if dualmachine and machine:FindFirstChild("TeleportPositions_Mirror") then
-				position2 = machine.TeleportPositions_Mirror:FindFirstChild("TeleportPosition").CFrame * CFrame.new(0, 2.3, 0)
-			end
-		else
-			position = CFrame.new(0, 0, 0)
-			position2 = CFrame.new(0, 0, 0)
-		end
-	else
-		position = CFrame.new(0, 0, 0)
-		position2 = CFrame.new(0, 0, 0)
+	local dualmachine = machine:GetAttribute("IsDualGen")
+	local quadmachine = machine:GetAttribute("MachineFamily") == "QUAD"
+
+	if dualmachine then
+		local mirror = machine:FindFirstChild("TeleportPositions_Mirror")
+		position2 = getoffset(mirror, "TeleportPosition") or fallbackCF
 	end
 
-	local machinestats = machine:FindFirstChild("Stats") or nil
-
-	local machtype = machine:GetAttribute("MinigameType")
-	if machtype == "MovementTreadmill" then 
-		machtype = "Treadmill"
-		position = machine:FindFirstChild("TeleportPositions"):FindFirstChild("TreadmillTeleportPosition").CFrame * CFrame.new(0, 2.3, 0)
-	elseif machtype == "Circle" then 
-		machtype = "Circle"
-	elseif machtype == "Barnaby" then 
-		machtype = "Arcade"
-	else
-		machtype = "Normal"
+	local raw = machine:GetAttribute("MinigameType")
+	local machtype = mapmachinetype(raw)
+	if raw == "MovementTreadmill" then
+		position = getoffset(tpFolder, "TreadmillTeleportPosition") or position
 	end
 
-	local machtype2 = dualmachine
-	if machtype2 then
-		if machtype2 == "MovementTreadmill" then 
-			machtype2 = "Treadmill"
-			if machine:FindFirstChild("TeleportPositions_Mirror") then
-				position2 = machine.TeleportPositions_Mirror:FindFirstChild("TreadmillTeleportPosition").CFrame * CFrame.new(0, 2.3, 0)
-			end
-		elseif machtype2 == "Circle" then 
-			machtype2 = "Circle"
-		elseif machtype2 == "Barnaby" then 
-			machtype2 = "Arcade"
-		else
-			machtype2 = "Normal"
-		end
+	local machtype2 = dualmachine and mapmachinetype(machine:GetAttribute("MinigameType2")) or "Normal"
+	if dualmachine and machine:GetAttribute("MinigameType2") == "MovementTreadmill" then
+		position2 = getoffset(machine:FindFirstChild("TeleportPositions_Mirror"), "TreadmillTeleportPosition") or position2
 	end
+
+	local machtype3 = quadmachine and mapmachinetype(machine:GetAttribute("MinigameType3")) or "Normal"
+	local machtype4 = quadmachine and mapmachinetype(machine:GetAttribute("MinigameType4")) or "Normal"
 
 	local resolvedtype = machtype
-	if machtype and machtype2 then
-		resolvedtype = "Dual " .. machtype .. " and " .. machtype2
-	elseif machtype then
-		resolvedtype = machtype
+	if dualmachine then
+		resolvedtype = ("Dual %s and %s"):format(machtype, machtype2)
+	elseif quadmachine then
+		resolvedtype = ("Quad %s, %s, %s, and %s"):format(machtype, machtype2, machtype3, machtype4)
 	end
+
+	local machinestats = machine:FindFirstChild("Stats")
+	local active = getvalue(machinestats, "ActivePlayer", nil)
 
 	local data = {
 		type = resolvedtype,
 		position = position,
 		position2 = position2,
-		completed = machinestats and machinestats:FindFirstChild("Completed") and machinestats.Completed.Value or false,
-		posessed = machinestats and machinestats:FindFirstChild("Connie") and machinestats.Connie.Value or false,
+		completed = getvalue(machinestats, "Completed", false),
+		posessed = getvalue(machinestats, "Connie", false),
 		debuffed = machine:GetAttribute("BrushaDebuffed") or false,
 		inspired = machine:GetAttribute("Inspired") or false,
-		slot1 = machinestats:FindFirstChild("ActivePlayer").Value,
-		slot2 = machtype2 and machinestats:FindFirstChild("ActivePlayer").Value or nil
+		slot1 = active,
+		slot2 = dualmachine and active or nil,
 	}
 
-	if give == "table" then
-		return data
-	else
-		return data[give]
-	end
+	return give == "table" and data or data[give]
 end --[[
 example usage:
 
