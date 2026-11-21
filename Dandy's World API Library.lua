@@ -247,6 +247,7 @@ API.ItemNameMaps, API.InvertedItemNameMaps = {
 	["Easter Egg"] = "DandyEasterEggs",
 	["Eject Button"] = "EjectButton",
 	["Extraction Speed Candy"] = "ExtractionSpeedCandy",
+	["Extra Heart"] = "ExtraHeart",
 	["Event Currency"] = "HolidayCollectibleItem",
 	["Fake Capsule"] = "FakeCapsule",
 	["Gumballs"] = "Gumball",
