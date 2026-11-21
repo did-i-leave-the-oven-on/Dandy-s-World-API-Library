@@ -1142,13 +1142,13 @@ function API.GetMachineInfo(machine: Instance?, give: string?)
 		position = getoffset(tpFolder, "TreadmillTeleportPosition") or position
 	end
 
-	local machtype2 = dualmachine and mapmachinetype(machine:GetAttribute("MinigameType2")) or "Normal"
-	if dualmachine and machine:GetAttribute("MinigameType2") == "MovementTreadmill" then
+	local machtype2 = dualmachine and mapmachinetype(machine:GetAttribute("Prompt2MinigameType")) or "Normal"
+	if dualmachine and machine:GetAttribute("Prompt2MinigameType") == "MovementTreadmill" then
 		position2 = getoffset(machine:FindFirstChild("TeleportPositions_Mirror"), "TreadmillTeleportPosition") or position2
 	end
 
-	local machtype3 = quadmachine and mapmachinetype(machine:GetAttribute("MinigameType3")) or "Normal"
-	local machtype4 = quadmachine and mapmachinetype(machine:GetAttribute("MinigameType4")) or "Normal"
+	local machtype3 = quadmachine and mapmachinetype(machine:GetAttribute("Prompt3MinigameType")) or "Normal"
+	local machtype4 = quadmachine and mapmachinetype(machine:GetAttribute("Prompt4MinigameType")) or "Normal"
 
 	local resolvedtype = machtype
 	if quadmachine then
