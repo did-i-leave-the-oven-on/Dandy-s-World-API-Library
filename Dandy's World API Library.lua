@@ -1094,7 +1094,7 @@ for _, item in ipairs(API.GetItemsOnFloor()) do
 end
 ]]
 
-local function mapmachinetype(rawType)
+local function mapmachinetype(type)
 	if type == "MovementTreadmill" then
 		return "Treadmill"
 	elseif type == "Circle" then
