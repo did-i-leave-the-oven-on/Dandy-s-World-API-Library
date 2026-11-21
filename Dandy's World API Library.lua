@@ -414,6 +414,10 @@ print("Panic mode is " .. panicking) → "Panic mode is off"
 
 function API.IsBreakRoom()
 	API.Assert(API.InRun == true, ".IsBreakRoom: You can only use this function in a run.")
+	
+	if not API.Get("room") then
+		return false
+	end
 
 	return API.Get("room").Name == "BreakRoomMap"
 end --[[
