@@ -358,6 +358,17 @@ function API.MapName(name: string?)
 	elseif name == "Blott" then
 		return "Blot"
 	end
+	
+	if rst:FindFirstChild("ItemModules") then
+		local module = rst.ItemModules[name]
+		
+		if module then
+			local t = require(rst.ItemModules[name])
+			if t and t.Name then
+				return t.Name
+			end
+		end
+	end
 
 	return API.ItemNameMaps[name] or API.InvertedItemNameMaps[name] or name
 end --[[
@@ -1140,10 +1151,11 @@ function API.GetMachineInfo(machine: Instance?, give: string?)
 	local machtype4 = quadmachine and mapmachinetype(machine:GetAttribute("MinigameType4")) or "Normal"
 
 	local resolvedtype = machtype
-	if dualmachine then
-		resolvedtype = ("Dual %s and %s"):format(machtype, machtype2)
-	elseif quadmachine then
+	if quadmachine then
 		resolvedtype = ("Quad %s, %s, %s, and %s"):format(machtype, machtype2, machtype3, machtype4)
+	elseif dualmachine then
+		resolvedtype = ("Dual %s and %s"):format(machtype, machtype2)
+
 	end
 
 	local machinestats = machine:FindFirstChild("Stats")
