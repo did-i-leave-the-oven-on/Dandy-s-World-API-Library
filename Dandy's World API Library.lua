@@ -237,6 +237,7 @@ end
 -- tables
 API.ItemNameMaps, API.InvertedItemNameMaps = {
 	["Air Horn"] = "AirHorn",
+	["Alarm Clock"] = "AlarmClock",
 	["Bandage"] = "Bandage",
 	["Bonbon"] = "BonBon",
 	["Bottle o' Pop"] = "PopBottle",
@@ -249,6 +250,7 @@ API.ItemNameMaps, API.InvertedItemNameMaps = {
 	["Event Currency"] = "HolidayCollectibleItem",
 	["Fake Capsule"] = "FakeCapsule",
 	["Gumballs"] = "Gumball",
+	["Glitter Glue"] = "GlitterGlue",
 	["Health Kit"] = "HealthKit",
 	["Instructions"] = "Instructions",
 	["Jawbreaker"] = "Jawbreaker",
@@ -341,7 +343,7 @@ function API.MapName(name: string?)
 	if name:find("Monster") or name:find("Twisted") then
 		name = string.gsub(name, "Monster", "")
 		name = string.gsub(name, "Twisted", "")
-		
+
 		if name == "RazzleDazzle" then
 			name = "Razzle & Dazzle"
 		elseif name == "Blott" then
