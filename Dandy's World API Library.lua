@@ -359,7 +359,7 @@ function API.MapName(name: string?)
 		return "Blot"
 	end
 	
-	if not name:find("Fake") and rst:FindFirstChild("ItemModules") then
+	if not name:find(" ") and rst:FindFirstChild("ItemModules") then
 		local module = rst.ItemModules[name]
 		
 		if module then
