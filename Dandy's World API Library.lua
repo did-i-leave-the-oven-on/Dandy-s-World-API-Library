@@ -415,7 +415,7 @@ print("Panic mode is " .. panicking) → "Panic mode is off"
 function API.IsBreakRoom()
 	API.Assert(API.InRun == true, ".IsBreakRoom: You can only use this function in a run.")
 
-	return false -- string.lower(plrgui.ScreenGui.Menu.TopBar.FloorNumber.Text):find("break")
+	return API.Get("room").Name == "BreakRoomMap"
 end --[[
 example usage:
 
