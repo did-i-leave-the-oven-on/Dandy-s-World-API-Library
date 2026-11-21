@@ -821,6 +821,43 @@ if API.TrinketActiveFor("DuckToy") then
 end
 ]]
 
+function API.GetMachineTypeOfPlayerExtracting(player: Instance?)
+	player = player or plr
+
+	API.Assert(player ~= nil and player:IsA("Player"), ".GetMachineTypeOfPlayerExtracting: Invalid \"player\" parameter. Make sure \"player\" is a Player.")
+
+	local machine = API.GetPlayerInfo(player, "extracting")
+	if not machine or typeof(machine) ~= "Instance" then
+		return nil
+	end
+
+	local info = API.GetMachineInfo(machine, "table")
+	if not info then
+		return nil
+	end
+
+	local possibleslots = {
+		{ slot = info.slot1, mtype = info.machtype },
+		{ slot = info.slot2, mtype = info.machtype2 },
+		{ slot = info.slot3, mtype = info.machtype3 },
+		{ slot = info.slot4, mtype = info.machtype4 },
+	}
+
+	if player.Character then
+		for _, entry in ipairs(possibleslots) do
+			if entry.slot == player.Character then
+				return entry.mtype
+			end
+		end
+	end
+
+	return info.type
+end --[[
+example usage:
+
+allan please add details
+]]
+
 function API.GetPlayerToon(player: Instance?)
 	API.Assert(API.InRun == true, ".GetPlayerToon: You can only use this function in a run.")
 
@@ -1063,7 +1100,7 @@ function API.GetMachineInfo(machine: Instance?, give: string?)
 	API.Assert(API.InRun == true, ".GetMachineInfo: You can only use this function in a run.")
 	API.Assert(machine ~= nil and typeof(machine) == "Instance", ".GetMachineInfo: Invalid \"machine\" parameter. Make sure \"machine\" is an Instance.")
 
-	give = give or "table" -- type, position, position2, completed, posessed, debuffed, inspired, slot1, slot2, slot3, slot4, table
+	give = give or "table" -- type, position, position2, completed, posessed, debuffed, inspired, machtype, machtype2, machtype3, machtype4, slot1, slot2, slot3, slot4, table
 	API.Assert(typeof(give) == "string", ".GetMachineInfo: Invalid \"give\" parameter. Make sure \"give\" is a string.")
 
 	local fallbackCF = CFrame.new(0, 0, 0)
@@ -1114,6 +1151,10 @@ function API.GetMachineInfo(machine: Instance?, give: string?)
 		posessed = getvalue(machinestats, "Connie", false),
 		debuffed = machine:GetAttribute("BrushaDebuffed") or false,
 		inspired = machine:GetAttribute("Inspired") or false,
+		machtype = machtype,
+		machtype2 = machtype2,
+		machtype3 = machtype3,
+		machtype4 = machtype4,
 		slot1 = active,
 		slot2 = active2,
 		slot3 = active3,
