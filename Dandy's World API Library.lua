@@ -314,6 +314,8 @@ API.TwistedRarities = {
 
 	["DandyMonster"] = "Lethal",
 	["DyleMonster"] = "Lethal",
+	["TwistedDessa"] = "Lethal",
+	["TwistedDioda"] = "Lethal",
 }
 
 -------------------------------------------------------------------------------------------------------------------------------
