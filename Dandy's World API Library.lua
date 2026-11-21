@@ -334,8 +334,10 @@ print(API.SpaceCamelCased("None")) → "None"
 function API.MapName(name: string?)
 	API.Assert(name ~= nil and typeof(name) == "string", ".MapName: Invalid \"name\" parameter. Make sure \"name\" exists and is a string.")
 
-	if name:find("Monster") then
+	if name:find("Monster") or name:find("Twisted") then
 		name = string.gsub(name, "Monster", "")
+		name = string.gsub(name, "Twisted", "")
+		
 		if name == "RazzleDazzle" then
 			name = "Razzle & Dazzle"
 		elseif name == "Blott" then
@@ -414,7 +416,7 @@ print("Panic mode is " .. panicking) → "Panic mode is off"
 
 function API.IsBreakRoom()
 	API.Assert(API.InRun == true, ".IsBreakRoom: You can only use this function in a run.")
-	
+
 	if not API.Get("room") then
 		return false
 	end
