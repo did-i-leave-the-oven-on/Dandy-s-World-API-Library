@@ -1120,7 +1120,7 @@ function API.GetMachineInfo(machine: Instance?, give: string?)
 	API.Assert(API.InRun == true, ".GetMachineInfo: You can only use this function in a run.")
 	API.Assert(machine ~= nil and typeof(machine) == "Instance", ".GetMachineInfo: Invalid \"machine\" parameter. Make sure \"machine\" is an Instance.")
 
-	give = give or "table" -- type, position, position2, completed, posessed, debuffed, inspired, machtype, machtype2, machtype3, machtype4, slot1, slot2, slot3, slot4, table
+	give = give or "table" -- type, position, position2, completed, posessed, debuffed, inspired, machtype, machtype2, machtype3, machtype4, slot1, slot2, slot3, slot4, slot5, slot6, slot7, slot8, table
 	API.Assert(typeof(give) == "string", ".GetMachineInfo: Invalid \"give\" parameter. Make sure \"give\" is a string.")
 
 	local fallbackCF = CFrame.new(0, 0, 0)
@@ -1130,6 +1130,7 @@ function API.GetMachineInfo(machine: Instance?, give: string?)
 
 	local dualmachine = machine:GetAttribute("IsDualGen")
 	local quadmachine = machine:GetAttribute("MachineFamily") == "QUAD"
+	local thebigone = machine:GetAttribute("MachineFamily") == "OCTA"
 
 	if dualmachine then
 		local mirror = machine:FindFirstChild("TeleportPositions_Mirror")
@@ -1153,9 +1154,10 @@ function API.GetMachineInfo(machine: Instance?, give: string?)
 	local resolvedtype = machtype
 	if quadmachine then
 		resolvedtype = ("Quad %s, %s, %s, and %s"):format(machtype, machtype2, machtype3, machtype4)
+	elseif thebigone then
+		resolvedtype = "THE BIG ONE"
 	elseif dualmachine then
 		resolvedtype = ("Dual %s and %s"):format(machtype, machtype2)
-
 	end
 
 	local machinestats = machine:FindFirstChild("Stats")
@@ -1163,6 +1165,10 @@ function API.GetMachineInfo(machine: Instance?, give: string?)
 	local active2 = getvalue(machinestats, "ActivePlayer2", nil)
 	local active3 = getvalue(machinestats, "ActivePlayer3", nil)
 	local active4 = getvalue(machinestats, "ActivePlayer4", nil)
+	local active5 = getvalue(machinestats, "ActivePlayer5", nil)
+	local active6 = getvalue(machinestats, "ActivePlayer6", nil)
+	local active7 = getvalue(machinestats, "ActivePlayer7", nil)
+	local active8 = getvalue(machinestats, "ActivePlayer8", nil)
 
 	local data = {
 		type = resolvedtype,
@@ -1180,6 +1186,10 @@ function API.GetMachineInfo(machine: Instance?, give: string?)
 		slot2 = active2,
 		slot3 = active3,
 		slot4 = active4,
+		slot5 = active5,
+		slot6 = active6,
+		slot7 = active7,
+		slot8 = active8,
 	}
 
 	return give == "table" and data or data[give]
