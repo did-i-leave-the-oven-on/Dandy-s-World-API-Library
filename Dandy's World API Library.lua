@@ -159,7 +159,7 @@ local plrgui = plr:WaitForChild("PlayerGui")
 local plrstats = char and char:FindFirstChild("Stats") or nil
 
 function API.UpdateCharacterRefs()
-	char = plr.CharacterAdded:Wait()
+	char = (ws:FindFirstChild("InGamePlayers") and ws.InGamePlayers:FindFirstChild(plr.Name)) or plr.Character
 
 	if char then
 		root = char:WaitForChild("HumanoidRootPart") or nil
