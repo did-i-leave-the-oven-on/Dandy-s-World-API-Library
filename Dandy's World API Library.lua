@@ -1,28 +1,20 @@
---[[---------------------------------------------------------------------------------------------------------------------------
-    ______                        _   __           _                 
-   /_  __/__  ____ _____ ___     / | / /___  _  __(_)___  __  _______
-    / / / _ \/ __ `/ __ `__ \   /  |/ / __ \| |/_/ / __ \/ / / / ___/
-   / / /  __/ /_/ / / / / / /  / /|  / /_/ />  </ / /_/ / /_/ (__  ) 
-  /_/  \___/\__,_/_/ /_/ /_/  /_/ |_/\____/_/|_/_/\____/\__,_/____/  
-
-  Made by unable | Dandy's World API Library
-
----------------------------------------------------------------------------------------------------------------------------]]--
+-------------------------------------------------------------------------------------------------------------------------------
 
 -- setup
 local API, loadArgs = {}, (... and typeof(...) == "table") and ... or {}
 
 local cloneref = cloneref or function(...) return ... end
-local getgenv = (getgenv and getgenv()) or _G
+local getgenv = getgenv or _G
 
-local exists = getgenv.DWAPIL_LOADED or nil
+local exists = getgenv().DWAPIL_Loaded or nil
 if exists then
-	if getgenv.DWAPIL_Warn then
-		getgenv.DWAPIL_Warn("Dandy's World API Library is already loaded.")
+	if getgenv().DWAPIL_Warn then
+		getgenv().DWAPIL_Warn("Dandy's World API Library is already loaded.")
 	end
 	return
 end
-getgenv.DWAPIL_LOADED = true
+
+getgenv().DWAPIL_Loaded = true
 
 local tisha = loadstring(game:HttpGet("https://raw.githubusercontent.com/did-i-leave-the-oven-on/Tisha/refs/heads/main/Tisha.lua"))()
 
@@ -123,7 +115,7 @@ end
 function API.Warn(message: string)
 	CC.print("w", "[Sprout]: " .. message)
 end
-getgenv.DWAPIL_Warn = API.Warn
+getgenv().DWAPIL_Warn = API.Warn
 
 function API.Error(message: string)
 	CC.print("err", "[Sprout]: " .. message)
@@ -176,7 +168,12 @@ function API.UpdateCharacterRefs()
 	end
 end
 
-print("o")
+API.UpdateCharacterRefs()
+plr.CharacterAdded:Connect(API.UpdateCharacterRefs)
+
+if ws:FindFirstChild("InGamePlayers") then
+	ws.InGamePlayers.ChildAdded:Connect(API.UpdateCharacterRefs)
+end
 
 -------------------------------------------------------------------------------------------------------------------------------
 
@@ -1644,8 +1641,6 @@ if API.InRun then
 	end))
 end
 
-print("o")
-
 function API.GetPlayerLastHitBy(player: Instance?, mapName: boolean?)
 	API.Assert(API.InRun == true, ".GetPlayerLastHitBy: You can only use this function in a run.")
 
@@ -1788,12 +1783,11 @@ if API.InRun then
 	end)
 end
 
-print("o")
-
 API.Print("Dandy's World API Library loaded successfully.")
 
 -------------------------------------------------------------------------------------------------------------------------------
 
+getgenv()["Dandy's World API Library"] = API
 return API
 
 -------------------------------------------------------------------------------------------------------------------------------
