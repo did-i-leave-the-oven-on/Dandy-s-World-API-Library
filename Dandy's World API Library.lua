@@ -151,11 +151,11 @@ end
 
 -- player variables
 local plr = plrs.LocalPlayer
+local plrgui = plr:WaitForChild("PlayerGui")
+
 local char = plr.Character or nil
 local root = char and char:WaitForChild("HumanoidRootPart") or nil
 local hum = char and char:FindFirstChild("Humanoid") or nil
-
-local plrgui = plr:WaitForChild("PlayerGui")
 local plrstats = char and char:FindFirstChild("Stats") or nil
 
 function API.UpdateCharacterRefs()
