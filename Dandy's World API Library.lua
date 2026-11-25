@@ -176,6 +176,8 @@ function API.UpdateCharacterRefs()
 	end
 end
 
+print("o")
+
 -------------------------------------------------------------------------------------------------------------------------------
 
 -- game variables
@@ -1642,6 +1644,8 @@ if API.InRun then
 	end))
 end
 
+print("o")
+
 function API.GetPlayerLastHitBy(player: Instance?, mapName: boolean?)
 	API.Assert(API.InRun == true, ".GetPlayerLastHitBy: You can only use this function in a run.")
 
@@ -1783,6 +1787,8 @@ if API.InRun then
 		plrgui:WaitForChild("HUD"):WaitForChild("Topbar"):WaitForChild("FloorStatus"):WaitForChild("FloorNumber"):GetPropertyChangedSignal("Text"):Connect(API.UpdateGameRefs)
 	end)
 end
+
+print("o")
 
 API.Print("Dandy's World API Library loaded successfully.")
 
