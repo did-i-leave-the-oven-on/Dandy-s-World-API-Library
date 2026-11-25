@@ -14,7 +14,7 @@ if exists then
 	return
 end
 
-local tisha = loadstring(game:HttpGet("https://raw.githubusercontent.com/did-i-leave-the-oven-on/Warehouse/refs/heads/main/Tisha.lua"))()
+local tisha = loadstring(game:HttpGet("https://raw.githubusercontent.com/did-i-leave-the-oven-on/Tisha/refs/heads/main/Tisha.lua"))()
 
 -------------------------------------------------------------------------------------------------------------------------------
 
