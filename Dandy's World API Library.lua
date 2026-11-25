@@ -6,7 +6,7 @@ local API, loadArgs = {}, (... and typeof(...) == "table") and ... or {}
 local cloneref = cloneref or function(...) return ... end
 local getgenv = getgenv or _G
 
-local exists = getgenv()["Dandy's World API Library"].Loaded or nil
+local exists = getgenv()["Dandy's World API Library"] and getgenv()["Dandy's World API Library"].Loaded or nil
 if exists then
 	if getgenv()["Dandy's World API Library"].Warn then
 		getgenv()["Dandy's World API Library"].Warn("Dandy's World API Library is already loaded.")
