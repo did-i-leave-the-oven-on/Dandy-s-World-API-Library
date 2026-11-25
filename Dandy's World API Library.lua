@@ -6,13 +6,15 @@ local API, loadArgs = {}, (... and typeof(...) == "table") and ... or {}
 local cloneref = cloneref or function(...) return ... end
 local getgenv = getgenv or _G
 
-local exists = getgenv()["Dandy's World API Library"] or nil
+local exists = getgenv().DWAPIL_Loaded or nil
 if exists then
 	if getgenv().DWAPIL_Warn then
 		getgenv().DWAPIL_Warn("Dandy's World API Library is already loaded.")
 	end
 	return
 end
+
+getgenv().DWAPIL_Loaded = true
 
 local tisha = loadstring(game:HttpGet("https://raw.githubusercontent.com/did-i-leave-the-oven-on/Tisha/refs/heads/main/Tisha.lua"))()
 
